@@ -7,8 +7,9 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as Haptics from "expo-haptics";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
 import CalorieRing from "../components/CalorieRing";
@@ -19,12 +20,22 @@ const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function Dashboard() {
   const router = useRouter();
-  const insets = useSafeAreaInsets(); // Much cleaner than hardcoded Platform checks
+  const insets = useSafeAreaInsets();
   const { meals, totals, tip, switchDate } = useMeals();
   const { profile } = useProfile();
 
   const today = new Date();
   const [selectedIdx, setSelectedIdx] = useState(6);
+  
+  // 1. Ref for the Date Strip
+  const dateStripRef = useRef(null);
+
+  // 2. Auto-scroll to "Today" on mount
+  useEffect(() => {
+    setTimeout(() => {
+      dateStripRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+  }, []);
 
   // Fallbacks and calculations
   const goal = profile.calorieGoal || 2000;
@@ -48,6 +59,8 @@ export default function Dashboard() {
   const selectedDay = weekDays[selectedIdx];
 
   const handleDayPress = (idx) => {
+    // Light haptic feedback on day change
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedIdx(idx);
     switchDate(weekDays[idx].fullDate);
   };
@@ -90,6 +103,7 @@ export default function Dashboard() {
         {/* Date Strip */}
         <View style={s.stripContainer}>
           <ScrollView
+            ref={dateStripRef} // Attached the ref here
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={s.strip}
@@ -228,7 +242,11 @@ export default function Dashboard() {
       <View style={[s.bottomArea, { paddingBottom: insets.bottom > 0 ? insets.bottom : rs(24) }]}>
         <TouchableOpacity
           style={s.logBtn}
-          onPress={() => router.push("/log")}
+          onPress={() => {
+            // Stronger haptic feedback for primary action
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); 
+            router.push("/log");
+          }}
           activeOpacity={0.88}
         >
           <Text style={s.logPlus}>+</Text>
@@ -277,7 +295,7 @@ const s = StyleSheet.create({
   avatarTxt: { color: "#fff", fontSize: rf(18), fontWeight: "700" },
 
   stripContainer: { marginBottom: rs(24) },
-  strip: { gap: rs(10), paddingRight: rs(20) }, // Ensures last item doesn't cut off abruptly
+  strip: { gap: rs(10), paddingRight: rs(20) }, 
   dayChip: {
     width: rs(54),
     paddingVertical: rs(12),
