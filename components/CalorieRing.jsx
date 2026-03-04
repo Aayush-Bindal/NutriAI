@@ -12,8 +12,13 @@ export default function CalorieRing({ eaten = 0, goal = 2000 }) {
   const cx = size / 2;
   const cy = size / 2;
   const circ = 2 * Math.PI * r;
+  
+  // Visual progress still fills up as you eat
   const pct = Math.min(eaten / goal, 1);
   const color = pct > 0.95 ? COLORS.red : pct > 0.75 ? COLORS.amber : COLORS.green;
+
+  // Calculate the remaining calories for the center text
+  const left = Math.max(goal - eaten, 0);
 
   // Animation shared value
   const progress = useSharedValue(0);
@@ -43,16 +48,21 @@ export default function CalorieRing({ eaten = 0, goal = 2000 }) {
       <AnimatedCircle
         cx={cx} cy={cy} r={r} fill="none"
         stroke={color} strokeWidth={rs(12)}
-        animatedProps={animatedProps} // Use animated props here
+        animatedProps={animatedProps}
         strokeLinecap="round"
         rotation="-90" origin={`${cx}, ${cy}`}
       />
       
       {/* Text inside the ring */}
-      <SvgText x={cx} y={cy - rf(8)} textAnchor="middle"
-        fill={COLORS.dark} fontSize={rf(26)} fontWeight="900">{eaten}</SvgText>
-      <SvgText x={cx} y={cy + rf(12)} textAnchor="middle"
-        fill={COLORS.muted} fontSize={rf(10)}>of {goal} kcal</SvgText>
+      <SvgText x={cx} y={cy - rf(4)} textAnchor="middle"
+        fill={COLORS.dark} fontSize={rf(28)} fontWeight="900">
+        {left}
+      </SvgText>
+      
+      <SvgText x={cx} y={cy + rf(16)} textAnchor="middle"
+        fill={COLORS.muted} fontSize={rf(12)} fontWeight="700">
+        kcal Left
+      </SvgText>
     </Svg>
   );
 }

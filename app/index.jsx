@@ -125,52 +125,40 @@ export default function Dashboard() {
 
         {/* Calorie Hero Card */}
         <View style={[s.hero, SHADOW.md]}>
-          <View style={s.heroHeader}>
-            <Text style={s.heroLbl}>
-              {isToday
-                ? (caloriesOver > 0 ? "Eaten today (Over limit)" : "Eaten today")
-                : `${selectedDay.day}, ${selectedDay.date}`}
+          <View style={s.heroTop}>
+            <Text style={s.heroTitle}>
+              {isToday ? "Daily Intake" : `${selectedDay.day}, ${selectedDay.date}`}
             </Text>
-            <Text style={[s.heroNum, { color: caloriesOver > 0 ? COLORS.red : COLORS.dark }]}>
-              {(caloriesOver > 0 ? caloriesOver : totals.calories).toLocaleString()}
-              <Text style={s.heroUnit}>{caloriesOver > 0 ? " kcal over" : " kcal"}</Text>
-            </Text>
+            {caloriesOver > 0 && (
+              <View style={s.overBadge}>
+                <Text style={s.overBadgeTxt}>Over Limit</Text>
+              </View>
+            )}
           </View>
 
           <View style={s.ringRow}>
-            <View style={s.stat}>
-              <Text style={s.statNum}>{goal.toLocaleString()}</Text>
-              <Text style={s.statLbl}>Goal</Text>
+            {/* Left Stat: Eaten */}
+            <View style={s.statBox}>
+              <Text style={s.statLbl}>Eaten</Text>
+              <Text style={s.statNum} numberOfLines={1} adjustsFontSizeToFit>
+                {totals.calories.toLocaleString()}
+              </Text>
+              <Text style={s.statUnit}>kcal</Text>
             </View>
 
+            {/* Center: Ring (Handles "Left" inside) */}
             <View style={s.ringWrap}>
               <CalorieRing eaten={totals.calories} goal={goal} />
             </View>
 
-            <View style={s.stat}>
-              <Text
-                style={[
-                  s.statNum,
-                  { color: caloriesLeft === 0 && totals.calories > 0 ? COLORS.red : COLORS.green }
-                ]}
-              >
-                {caloriesLeft.toLocaleString()}
+            {/* Right Stat: Goal */}
+            <View style={s.statBox}>
+              <Text style={s.statLbl}>Goal</Text>
+              <Text style={s.statNum} numberOfLines={1} adjustsFontSizeToFit>
+                {goal.toLocaleString()}
               </Text>
-              <Text style={s.statLbl}>Left</Text>
+              <Text style={s.statUnit}>kcal</Text>
             </View>
-          </View>
-
-          {/* Mini Linear Progress */}
-          <View style={s.bar}>
-            <View
-              style={[
-                s.barFill,
-                {
-                  width: `${Math.min((totals.calories / goal) * 100, 100)}%`,
-                  backgroundColor: caloriesOver > 0 ? COLORS.red : COLORS.green,
-                },
-              ]}
-            />
           </View>
         </View>
 
@@ -312,20 +300,23 @@ const s = StyleSheet.create({
   dot: { width: rs(5), height: rs(5), borderRadius: rs(2.5), backgroundColor: COLORS.green, marginTop: rs(2) },
   dotOn: { backgroundColor: "#fff" },
 
+// --- REPLACE YOUR OLD HERO & BAR STYLES WITH THESE ---
+  
   hero: { backgroundColor: COLORS.card, borderRadius: rs(28), padding: rs(24), marginBottom: rs(20) },
-  heroHeader: { marginBottom: rs(16), alignItems: "center" },
-  heroLbl: { fontSize: rf(13), fontWeight: "600", color: COLORS.muted, marginBottom: rs(4) },
-  heroNum: { fontSize: rf(42), fontWeight: "900", letterSpacing: -1.5 },
-  heroUnit: { fontSize: rf(16), fontWeight: "600", color: COLORS.muted },
+  heroTop: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: rs(20) },
+  heroTitle: { fontSize: rf(18), fontWeight: "800", color: COLORS.dark },
+  
+  overBadge: { backgroundColor: "#FEF2F2", paddingHorizontal: rs(10), paddingVertical: rs(4), borderRadius: rs(12) },
+  overBadgeTxt: { color: COLORS.red, fontSize: rf(10), fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.5 },
 
-  ringRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: rs(20) },
-  stat: { flex: 1, alignItems: "center" },
-  statNum: { fontSize: rf(24), fontWeight: "800", color: COLORS.dark, letterSpacing: -0.5 },
-  statLbl: { fontSize: rf(12), fontWeight: "500", color: COLORS.muted, marginTop: rs(4) },
+  ringRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  statBox: { flex: 1, alignItems: "center" },
+  statLbl: { fontSize: rf(12), fontWeight: "500", color: "#022C22", textTransform: "uppercase", letterSpacing: 0.5, marginBottom: rs(4) },
+  statNum: { fontSize: rf(24), fontWeight: "500", color: "#022C22", letterSpacing: -0.5 },
+  statUnit: { fontSize: rf(12), fontWeight: "500", color: "#022C22", marginTop: rs(2) },
   ringWrap: { alignItems: "center", justifyContent: "center", paddingHorizontal: rs(10) },
-
-  bar: { height: rs(6), backgroundColor: COLORS.border, borderRadius: rs(99), overflow: "hidden" },
-  barFill: { height: "100%", borderRadius: rs(99) },
+  
+  // (You can safely delete the old s.bar and s.barFill styles entirely)
 
   macroRow: { flexDirection: "row", gap: rs(12), marginBottom: rs(20) },
   macroCard: { flex: 1, borderRadius: rs(24), padding: rs(16) },
