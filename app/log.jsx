@@ -75,6 +75,8 @@ export default function LogScreen() {
         setError(
           "No API key found. Tap your profile icon to add your Gemini API key.",
         );
+      } else if (e.message === "empty_input") {
+        setError("Please describe what you ate before analysing.");
       } else {
         setError(`Error: ${e.message}`);
       }

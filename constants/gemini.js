@@ -1,4 +1,7 @@
-const MODEL = "gemini-3.1-flash-lite-preview";
+const PRIMARY_MODEL = "gemini-3.1-flash-lite-preview";
+const SECONDARY_MODEL = "gemini-2.5-flash";
+const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
+const FETCH_TIMEOUT = 15_000;
 
 const PROMPT = `You are a nutrition expert with deep knowledge of Indian and global food.
 When the user tells you what they ate, return ONLY a valid JSON object. No markdown, no explanation, nothing else.
@@ -22,28 +25,66 @@ Rules:
 
 export async function logMeal(userInput, apiKey) {
   if (!apiKey) throw new Error("no_api_key");
+  if (!userInput?.trim()) throw new Error("empty_input");
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
+  async function attemptFetch(modelName) {
+    const url = `${API_BASE}/${modelName}:generateContent?key=${apiKey}`;
+    const body = {
+      contents: [{ parts: [{ text: PROMPT + "\n\nUser said: " + userInput }] }],
+      generationConfig: { response_mime_type: "application/json" },
+    };
 
-  const body = {
-    contents: [{ parts: [{ text: PROMPT + "\n\nUser said: " + userInput }] }],
-  };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
 
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
 
-  const data = await response.json();
-  // console.log("STATUS:", response.status);
-  // console.log("RESPONSE:", JSON.stringify(data));
-
-  if (!response.ok) {
-    throw new Error(data?.error?.message || "API error");
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.error?.message || "API error");
+      return data;
+    } catch (e) {
+      if (e.name === "AbortError")
+        throw new Error(
+          "Request timed out. Check your connection and try again.",
+        );
+      throw e;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
-  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  try {
+    const data = await attemptFetch(PRIMARY_MODEL);
+    return parseGeminiResponse(data);
+  } catch {
+    try {
+      const data = await attemptFetch(SECONDARY_MODEL);
+      return parseGeminiResponse(data);
+    } catch (fallbackError) {
+      throw new Error(
+        fallbackError.message ||
+          "Both AI models are currently unavailable. Please try again in a moment.",
+      );
+    }
+  }
+}
+
+function parseGeminiResponse(data) {
+  const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+  if (!raw) throw new Error("Empty response from AI. Please try again.");
+
   const clean = raw.replace(/```json|```/g, "").trim();
-  return JSON.parse(clean);
+  const parsed = JSON.parse(clean);
+
+  if (parsed.error) return parsed;
+  if (!parsed.items || !parsed.total || !parsed.meal) {
+    throw new Error("Unexpected response format. Please try again.");
+  }
+  return parsed;
 }
