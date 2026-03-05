@@ -1,50 +1,111 @@
-# Welcome to your Expo app 👋
+# NutriAI
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+AI-powered calorie and nutrition tracker built with React Native and Google Gemini. Describe what you ate in plain language and get instant nutritional analysis with personalized daily goals.
 
-## Get started
+Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, poha, rajma chawal, and more — while supporting global foods too.
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- **AI Meal Logging** — Type what you ate in natural language. Gemini AI returns calories, protein, carbs, fat, fiber, and a friendly nutrition tip.
+- **Personalized Goals** — Calorie and macro targets calculated from your age, gender, weight, height, fitness goal, and activity level using the Mifflin-St Jeor equation.
+- **Dashboard** — Animated calorie ring, macro progress bars (carbs, protein, fat, fiber), date navigation, and meal history at a glance.
+- **Weight Tracking** — Log weight entries over time, view progress on an SVG graph, track BMI with color-coded categories.
+- **Backup & Restore** — Export all your data as a JSON file and restore it on any device. API key is never included in backups.
+- **Secure by Default** — Your Gemini API key is stored in the device's secure enclave via `expo-secure-store`. All data stays on your device.
+- **Haptic Feedback** — Tactile responses on interactions throughout the app.
 
-2. Start the app
+## Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+| Layer        | Technology                                          |
+| ------------ | --------------------------------------------------- |
+| Framework    | React Native 0.81 + Expo SDK 54                     |
+| Routing      | Expo Router (file-based)                            |
+| AI           | Google Gemini API (`gemini-3.1-flash-lite-preview`) |
+| State        | React Context (ProfileContext, MealContext)         |
+| Storage      | AsyncStorage + SecureStore                          |
+| Animations   | React Native Reanimated 4, Animated API             |
+| Charts       | react-native-svg (Polyline, Circle)                 |
+| Architecture | React Native New Architecture + React Compiler      |
 
-In the output, you'll find options to open the app in a
+## Project Structure
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+nutriai/
+├── app/                    # Screens (file-based routing)
+│   ├── _layout.jsx         # Root layout, providers, onboarding gate
+│   ├── index.jsx           # Dashboard
+│   ├── log.jsx             # Log meal (modal)
+│   └── profile.jsx         # Settings, weight, backup (modal)
+│
+├── components/             # UI components
+│   ├── Onboarding.jsx      # 6-step onboarding wizard
+│   ├── CalorieHeroCard.jsx  # Calorie display card
+│   ├── CalorieRing.jsx     # Animated SVG progress ring
+│   ├── MacrosRow.jsx       # 2x2 macro nutrient grid
+│   ├── DashboardHeader.jsx # Greeting header
+│   ├── DateStrip.jsx       # Horizontal date selector
+│   ├── MealsList.jsx       # Meal sections container
+│   ├── MealSection.jsx     # Individual meal type card
+│   ├── AiTip.jsx           # AI tip badge
+│   └── LogMealButton.jsx   # Floating action button
+│
+├── context/                # State management
+│   ├── ProfileContext.jsx  # Profile, goals, weight, backup/restore
+│   └── MealContext.jsx     # Daily meal data
+│
+├── constants/              # App constants
+│   ├── theme.js            # Colors, responsive scaling, shadows
+│   └── gemini.js           # Gemini API integration
+│
+└── assets/images/          # App icon
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Getting Started
 
-## Learn more
+### Prerequisites
 
-To learn more about developing your project with Expo, look at the following resources:
+- Node.js 18+
+- A [Google Gemini API key](https://aistudio.google.com/) (free tier available)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### Setup
 
-## Join the community
+```bash
+# Clone the repo
+git clone https://github.com/<your-username>/nutriai.git
+cd nutriai
 
-Join our community of developers creating universal apps.
+# Install dependencies
+npm install
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Start the dev server
+npx expo start
+```
+
+Scan the QR code with **Expo Go** on your phone, or press `a` for Android emulator / `i` for iOS simulator.
+
+### Get Your API Key
+
+1. Go to [aistudio.google.com](https://aistudio.google.com/)
+2. Create a free API key
+3. Enter it during onboarding or in the Settings page
+
+## How It Works
+
+1. **Onboarding** — Enter your details (name, age, gender, weight, height, goal, activity level). The app calculates your daily calorie and macro targets.
+2. **Log a meal** — Tap the log button and describe your meal: _"2 roti with dal makhani and raita"_. Gemini AI analyzes it and returns a full nutritional breakdown.
+3. **Track progress** — View your daily intake on the dashboard. Log your weight over time and watch the progress graph.
+4. **Backup your data** — Export everything as a JSON file from Settings. Restore it anytime, even during onboarding on a new device.
+
+## Nutrition Calculation
+
+- **BMR**: Mifflin-St Jeor equation
+- **TDEE**: BMR × activity multiplier (1.2–1.725)
+- **Calorie goal**: TDEE adjusted for goal (−400 lose, +300 gain)
+- **Protein**: 1.6–2.0 g/kg body weight based on goal
+- **Fat**: 25% of calorie goal
+- **Carbs**: Remaining calories after protein and fat
+- **Fiber**: 38g (male) / 25g (female) per dietary guidelines
+
+## License
+
+This project is for personal/educational use.
