@@ -6,9 +6,9 @@ When the user tells you what they ate, return ONLY a valid JSON object. No markd
 Format:
 {
   "items": [
-    { "name": "Food name", "quantity": "2 pieces / 1 bowl / etc", "calories": 240, "protein": 6, "carbs": 40, "fat": 4, "emoji": "🍛" }
+    { "name": "Food name", "quantity": "2 pieces / 1 bowl / etc", "calories": 240, "protein": 6, "carbs": 40, "fat": 4, "fiber": 3, "emoji": "🍛" }
   ],
-  "total": { "calories": 240, "protein": 6, "carbs": 40, "fat": 4 },
+  "total": { "calories": 240, "protein": 6, "carbs": 40, "fat": 4, "fiber": 3 },
   "meal": "Breakfast",
   "tip": "a short friendly tip or observation about this meal"
 }

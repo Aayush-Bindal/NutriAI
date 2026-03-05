@@ -1,11 +1,17 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 
 const MealContext = createContext(null);
 
 const EMPTY_DAY = () => ({
   meals: { Breakfast: [], Lunch: [], Dinner: [], Snack: [] },
-  totals: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  totals: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
   tip: null,
 });
 
@@ -20,17 +26,20 @@ export function MealProvider({ children }) {
   const [activeDate, setActiveDate] = useState(new Date());
 
   // Load a specific date from AsyncStorage into cache
-  const loadDate = useCallback(async (date) => {
-    const key = dateKey(date);
-    if (cache[key]) return; // already loaded
-    try {
-      const raw = await AsyncStorage.getItem(key);
-      const data = raw ? JSON.parse(raw) : EMPTY_DAY();
-      setCache((prev) => ({ ...prev, [key]: data }));
-    } catch {
-      setCache((prev) => ({ ...prev, [key]: EMPTY_DAY() }));
-    }
-  }, [cache]);
+  const loadDate = useCallback(
+    async (date) => {
+      const key = dateKey(date);
+      if (cache[key]) return; // already loaded
+      try {
+        const raw = await AsyncStorage.getItem(key);
+        const data = raw ? JSON.parse(raw) : EMPTY_DAY();
+        setCache((prev) => ({ ...prev, [key]: data }));
+      } catch {
+        setCache((prev) => ({ ...prev, [key]: EMPTY_DAY() }));
+      }
+    },
+    [cache],
+  );
 
   // Save a date's data to AsyncStorage
   const saveDate = async (date, data) => {
@@ -48,10 +57,13 @@ export function MealProvider({ children }) {
   }, []);
 
   // Switch active date — loads from storage if not cached
-  const switchDate = useCallback(async (date) => {
-    setActiveDate(date);
-    await loadDate(date);
-  }, [loadDate]);
+  const switchDate = useCallback(
+    async (date) => {
+      setActiveDate(date);
+      await loadDate(date);
+    },
+    [loadDate],
+  );
 
   // Add a meal to active date
   const addMeal = async (mealType, items, mealTotals, mealTip) => {
@@ -65,9 +77,10 @@ export function MealProvider({ children }) {
       },
       totals: {
         calories: current.totals.calories + mealTotals.calories,
-        protein:  current.totals.protein  + mealTotals.protein,
-        carbs:    current.totals.carbs    + mealTotals.carbs,
-        fat:      current.totals.fat      + mealTotals.fat,
+        protein: current.totals.protein + mealTotals.protein,
+        carbs: current.totals.carbs + mealTotals.carbs,
+        fat: current.totals.fat + mealTotals.fat,
+        fiber: current.totals.fiber + (mealTotals.fiber || 0),
       },
       tip: mealTip || current.tip,
     };
@@ -80,14 +93,16 @@ export function MealProvider({ children }) {
   const dayData = cache[key] || EMPTY_DAY();
 
   return (
-    <MealContext.Provider value={{
-      meals: dayData.meals,
-      totals: dayData.totals,
-      tip: dayData.tip,
-      activeDate,
-      switchDate,
-      addMeal,
-    }}>
+    <MealContext.Provider
+      value={{
+        meals: dayData.meals,
+        totals: dayData.totals,
+        tip: dayData.tip,
+        activeDate,
+        switchDate,
+        addMeal,
+      }}
+    >
       {children}
     </MealContext.Provider>
   );

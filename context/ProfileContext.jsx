@@ -22,7 +22,7 @@ const DEFAULT_PROFILE = {
   activity: "",
   apiKey: "",
   calorieGoal: 2000,
-  macroGoals: { protein: 120, carbs: 225, fat: 56 },
+  macroGoals: { protein: 120, carbs: 225, fat: 56, fiber: 25 },
 };
 
 const PROTEIN_PER_KG = { lose: 1.8, maintain: 1.6, gain: 2.0 };
@@ -33,7 +33,7 @@ function calcGoals(profile) {
   if (!age || !weight || !height) {
     return {
       calorieGoal: 2000,
-      macroGoals: { protein: 120, carbs: 225, fat: 56 },
+      macroGoals: { protein: 120, carbs: 225, fat: 56, fiber: 25 },
     };
   }
 
@@ -70,9 +70,11 @@ function calcGoals(profile) {
   const remainingCals = calorieGoal - proteinCals - fatCals;
   const carbs = Math.round(Math.max(remainingCals, 0) / 4);
 
+  const fiber = gender === "male" ? 38 : 25;
+
   return {
     calorieGoal,
-    macroGoals: { protein, carbs, fat },
+    macroGoals: { protein, carbs, fat, fiber },
   };
 }
 

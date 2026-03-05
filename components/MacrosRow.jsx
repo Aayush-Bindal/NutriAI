@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { COLORS, SHADOW, rf, rs } from "../constants/theme";
 
 export default function MacrosRow({ totals, macroGoals }) {
-  const goals = macroGoals || { protein: 150, carbs: 225, fat: 56 };
+  const goals = macroGoals || { protein: 150, carbs: 225, fat: 56, fiber: 25 };
   const macros = [
     {
       label: "Carbs",
@@ -25,10 +25,17 @@ export default function MacrosRow({ totals, macroGoals }) {
       color: COLORS.amber,
       bg: "#FDF8EE",
     },
+    {
+      label: "Fiber",
+      value: totals.fiber || 0,
+      max: goals.fiber || 25,
+      color: COLORS.green,
+      bg: "#EFF6F0",
+    },
   ];
 
   return (
-    <View style={s.macroRow}>
+    <View style={s.macroGrid}>
       {macros.map((m) => (
         <View
           key={m.label}
@@ -58,8 +65,18 @@ export default function MacrosRow({ totals, macroGoals }) {
 }
 
 const s = StyleSheet.create({
-  macroRow: { flexDirection: "row", gap: rs(12), marginBottom: rs(20) },
-  macroCard: { flex: 1, borderRadius: rs(24), padding: rs(16) },
+  macroGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: rs(12),
+    marginBottom: rs(20),
+  },
+  macroCard: {
+    width: "47%",
+    flexGrow: 1,
+    borderRadius: rs(24),
+    padding: rs(16),
+  },
   macroLbl: {
     fontSize: rf(11),
     fontWeight: "800",
