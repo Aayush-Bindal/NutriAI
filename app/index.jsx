@@ -102,11 +102,7 @@ export default function Dashboard() {
         <MealsList meals={meals} isToday={isToday} selectedDay={selectedDay} />
       </ScrollView>
 
-      <LogMealButton
-        isToday={isToday}
-        selectedDay={selectedDay}
-        bottomInset={insets.bottom}
-      />
+      <LogMealButton bottomInset={insets.bottom} />
 
       {showPicker && (
         <DateTimePicker

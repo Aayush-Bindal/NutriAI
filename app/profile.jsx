@@ -205,7 +205,7 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={{ height: Platform.OS === "ios" ? rs(20) : rs(10) }} />
+        <View style={{ height: Platform.OS === "ios" ? rs(40) : rs(30) }} />
 
         {/* Handle */}
         <View style={s.handle} />
@@ -596,8 +596,8 @@ const s = StyleSheet.create({
   footerVersion: {
     fontSize: rf(12),
     fontWeight: "600",
-    color: COLORS.border,
-    marginTop: rs(2),
+    color: COLORS.muted,
+    marginTop: rs(4),
   },
 
   // ─ Save dock ─

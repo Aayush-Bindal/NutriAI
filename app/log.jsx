@@ -350,7 +350,7 @@ const s = StyleSheet.create({
   suggTxt: { fontSize: rf(12), color: COLORS.green, fontWeight: "600" },
 
   analyseBtn: {
-    backgroundColor: COLORS.dark,
+    backgroundColor: "#2D3B2D",
     borderRadius: rs(18),
     paddingVertical: rs(18),
     alignItems: "center",
@@ -432,7 +432,7 @@ const s = StyleSheet.create({
   },
 
   addBtn: {
-    backgroundColor: COLORS.dark,
+    backgroundColor: "#2D3B2D",
     margin: rs(14),
     borderRadius: rs(16),
     paddingVertical: rs(16),

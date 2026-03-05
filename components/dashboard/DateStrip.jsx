@@ -104,7 +104,7 @@ const s = StyleSheet.create({
     gap: rs(4),
     ...SHADOW.sm,
   },
-  dayChipOn: { backgroundColor: COLORS.dark },
+  dayChipOn: { backgroundColor: "#2D3B2D" },
   dayLbl: {
     fontSize: rf(11),
     fontWeight: "700",
