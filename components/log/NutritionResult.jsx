@@ -1,0 +1,129 @@
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+
+export default function NutritionResult({ result, mealType, added, onAdd }) {
+  return (
+    <View style={[s.resultCard, SHADOW.md]}>
+      {/* Food items */}
+      {result.items.map((item, i) => (
+        <View
+          key={i}
+          style={[s.itemRow, i < result.items.length - 1 && s.itemBorder]}
+        >
+          <Text style={s.itemEmoji}>{item.emoji}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.itemName}>{item.name}</Text>
+            <Text style={s.itemQty}>{item.quantity}</Text>
+          </View>
+          <Text style={s.itemCal}>{item.calories} cal</Text>
+        </View>
+      ))}
+
+      {/* Macro strip */}
+      <View style={s.macroStrip}>
+        {[
+          { v: result.total.calories, l: "kcal", c: COLORS.red },
+          { v: `${result.total.protein}g`, l: "protein", c: COLORS.blue },
+          { v: `${result.total.carbs}g`, l: "carbs", c: COLORS.amber },
+          { v: `${result.total.fat}g`, l: "fat", c: COLORS.purple },
+          { v: `${result.total.fiber || 0}g`, l: "fiber", c: COLORS.green },
+        ].map((m, i, arr) => (
+          <View
+            key={m.l}
+            style={[s.macroItem, i < arr.length - 1 && s.macroDivide]}
+          >
+            <Text style={[s.macroVal, { color: m.c }]}>{m.v}</Text>
+            <Text style={s.macroLbl}>{m.l}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Tip */}
+      {result.tip && (
+        <View style={s.tipRow}>
+          <View style={s.tipBadge}>
+            <Text style={s.tipBadgeTxt}>AI Tip</Text>
+          </View>
+          <Text style={s.tipTxt}>{result.tip}</Text>
+        </View>
+      )}
+
+      {/* Add btn */}
+      <TouchableOpacity
+        style={[s.addBtn, added && s.addBtnDone]}
+        onPress={onAdd}
+        disabled={added}
+        activeOpacity={0.85}
+      >
+        <Text style={s.addTxt}>
+          {added ? "✓  Added!" : `Add to ${mealType}`}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  resultCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: rs(24),
+    overflow: "hidden",
+    marginBottom: rs(16),
+  },
+  itemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: rs(18),
+    paddingVertical: rs(14),
+  },
+  itemBorder: { borderBottomWidth: 1, borderBottomColor: COLORS.border },
+  itemEmoji: { fontSize: rf(26), marginRight: rs(14) },
+  itemName: { fontSize: rf(15), fontWeight: "600", color: COLORS.dark },
+  itemQty: { fontSize: rf(12), color: COLORS.muted, marginTop: rs(2) },
+  itemCal: { fontSize: rf(14), fontWeight: "700", color: COLORS.mid },
+  macroStrip: {
+    flexDirection: "row",
+    backgroundColor: COLORS.cardAlt,
+    paddingVertical: rs(16),
+  },
+  macroItem: { flex: 1, alignItems: "center" },
+  macroDivide: { borderRightWidth: 1, borderRightColor: COLORS.border },
+  macroVal: { fontSize: rf(18), fontWeight: "900", letterSpacing: -0.5 },
+  macroLbl: {
+    fontSize: rf(10),
+    color: COLORS.muted,
+    marginTop: rs(2),
+    fontWeight: "600",
+  },
+  tipRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: rs(10),
+    padding: rs(16),
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  tipBadge: {
+    backgroundColor: COLORS.greenLight,
+    borderRadius: rs(99),
+    paddingHorizontal: rs(10),
+    paddingVertical: rs(4),
+  },
+  tipBadgeTxt: { fontSize: rf(10), fontWeight: "800", color: COLORS.green },
+  tipTxt: {
+    flex: 1,
+    fontSize: rf(13),
+    color: COLORS.mid,
+    lineHeight: rf(19),
+    fontWeight: "500",
+  },
+  addBtn: {
+    backgroundColor: "#2D3B2D",
+    margin: rs(14),
+    borderRadius: rs(16),
+    paddingVertical: rs(16),
+    alignItems: "center",
+  },
+  addBtnDone: { backgroundColor: COLORS.green },
+  addTxt: { color: "#fff", fontSize: rf(16), fontWeight: "700" },
+});
