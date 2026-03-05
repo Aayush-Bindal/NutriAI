@@ -60,6 +60,17 @@ nutriai/
 └── assets/images/          # App icon
 ```
 
+## Download
+
+Grab the latest APK from [GitHub Releases](../../releases/latest) and install it directly on your Android device — no build tools needed.
+
+1. Go to the [Releases](../../releases) page
+2. Download the `.apk` file from the latest release
+3. Open it on your Android phone and follow the install prompt
+4. You may need to enable **Install from unknown sources** in your device settings
+
+> You'll still need your own Gemini API key to use AI meal logging. Get one for free at [aistudio.google.com](https://aistudio.google.com/).
+
 ## Getting Started
 
 ### Prerequisites
