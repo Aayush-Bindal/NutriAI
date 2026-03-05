@@ -4,20 +4,20 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    Alert,
-    LayoutAnimation,
-    Linking,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  LayoutAnimation,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProfileForm, { GOALS } from "../components/profile/ProfileForm";
+import UpdateModal from "../components/profile/UpdateModal";
 import WeightSection from "../components/profile/WeightSection";
 import { COLORS, rf, rs, SHADOW } from "../constants/theme";
 import { useProfile } from "../context/ProfileContext";
@@ -51,6 +51,7 @@ export default function ProfileScreen() {
   const [profileExpanded, setProfileExpanded] = useState(false);
   const [weightInput, setWeightInput] = useState("");
   const [checking, setChecking] = useState(false);
+  const [updateModal, setUpdateModal] = useState(null); // { status, version?, notes?, url? }
   const [heightUnit, setHeightUnit] = useState("cm");
   const [htFeet, setHtFeet] = useState("");
   const [htInches, setHtInches] = useState("");
@@ -132,25 +133,17 @@ export default function ProfileScreen() {
       if (isNewer) {
         const apk = (release.assets || []).find((a) => a.name.endsWith(".apk"));
         const url = apk ? apk.browser_download_url : release.html_url;
-        Alert.alert(
-          `Update Available — v${remote}`,
-          release.body || "A new version is available.",
-          [
-            { text: "Later", style: "cancel" },
-            { text: "Download", onPress: () => Linking.openURL(url) },
-          ],
-        );
+        setUpdateModal({
+          status: "available",
+          version: remote,
+          notes: release.body || "A new version is available.",
+          url,
+        });
       } else {
-        Alert.alert(
-          "Up to Date",
-          `You're on the latest version (v${appVersion}).`,
-        );
+        setUpdateModal({ status: "uptodate" });
       }
     } catch {
-      Alert.alert(
-        "Error",
-        "Couldn't check for updates. Please try again later.",
-      );
+      setUpdateModal({ status: "error" });
     } finally {
       setChecking(false);
     }
@@ -429,6 +422,13 @@ export default function ProfileScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* ══════════ UPDATE MODAL ══════════ */}
+      <UpdateModal
+        data={updateModal}
+        appVersion={appVersion}
+        onClose={() => setUpdateModal(null)}
+      />
 
       {/* ══════════ SAVE BUTTON (sticky bottom) ══════════ */}
       {dirty && (
