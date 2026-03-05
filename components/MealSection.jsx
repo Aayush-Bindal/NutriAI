@@ -1,7 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SHADOW, rs, rf } from "../constants/theme";
+import { useMeals } from "../context/MealContext";
 
 export default function MealSection({ title, items = [] }) {
+  const { removeItem } = useMeals();
   if (!items.length) return null;
   const total = items.reduce((s, i) => s + i.calories, 0);
 
@@ -19,6 +22,18 @@ export default function MealSection({ title, items = [] }) {
             <Text style={s.qty}>{item.quantity}</Text>
           </View>
           <Text style={s.itemCal}>{item.calories}</Text>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert("Remove Item", `Remove ${item.name}?`, [
+                { text: "Cancel", style: "cancel" },
+                { text: "Remove", style: "destructive", onPress: () => removeItem(title, i) },
+              ])
+            }
+            hitSlop={8}
+            style={s.deleteBtn}
+          >
+            <Ionicons name="trash-outline" size={rf(16)} color={COLORS.red} />
+          </TouchableOpacity>
         </View>
       ))}
     </View>
@@ -36,4 +51,5 @@ const s = StyleSheet.create({
   name: { fontSize: rf(14), fontWeight: "600", color: COLORS.dark },
   qty: { fontSize: rf(12), color: COLORS.muted, marginTop: rs(1) },
   itemCal: { fontSize: rf(13), fontWeight: "700", color: COLORS.mid },
+  deleteBtn: { marginLeft: rs(10), padding: rs(4) },
 });

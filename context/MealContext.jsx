@@ -89,6 +89,31 @@ export function MealProvider({ children }) {
     await saveDate(activeDate, updated);
   };
 
+  // Remove a single item from a meal category by index
+  const removeItem = async (mealType, index) => {
+    const key = dateKey(activeDate);
+    const current = cache[key] || EMPTY_DAY();
+    const list = [...(current.meals[mealType] || [])];
+    if (index < 0 || index >= list.length) return;
+
+    const removed = list.splice(index, 1)[0];
+
+    const updated = {
+      meals: { ...current.meals, [mealType]: list },
+      totals: {
+        calories: Math.max(0, current.totals.calories - (removed.calories || 0)),
+        protein: Math.max(0, current.totals.protein - (removed.protein || 0)),
+        carbs: Math.max(0, current.totals.carbs - (removed.carbs || 0)),
+        fat: Math.max(0, current.totals.fat - (removed.fat || 0)),
+        fiber: Math.max(0, current.totals.fiber - (removed.fiber || 0)),
+      },
+      tip: current.tip,
+    };
+
+    setCache((prev) => ({ ...prev, [key]: updated }));
+    await saveDate(activeDate, updated);
+  };
+
   const key = dateKey(activeDate);
   const dayData = cache[key] || EMPTY_DAY();
 
@@ -101,6 +126,7 @@ export function MealProvider({ children }) {
         activeDate,
         switchDate,
         addMeal,
+        removeItem,
       }}
     >
       {children}
