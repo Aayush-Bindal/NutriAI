@@ -1,16 +1,15 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { logMeal } from "../constants/gemini";
 import { COLORS, SHADOW, rf, rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
@@ -44,6 +43,7 @@ export default function LogScreen() {
   const router = useRouter();
   const { addMeal } = useMeals();
   const { profile } = useProfile();
+  const insets = useSafeAreaInsets();
 
   const [input, setInput] = useState("");
   const [mealType, setMealType] = useState(getDefaultMeal());
@@ -93,175 +93,165 @@ export default function LogScreen() {
 
   return (
     <View style={s.root}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      <ScrollView
+        style={s.scroll}
+        contentContainerStyle={[
+          s.content,
+          { paddingBottom: insets.bottom + rs(20) },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView
-          style={s.scroll}
-          contentContainerStyle={s.content}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Handle */}
-          <View style={s.handle} />
+        {/* Handle */}
+        <View style={s.handle} />
 
-          {/* Header */}
-          <View style={s.header}>
-            <Text style={s.title}>Log a Meal</Text>
-            <TouchableOpacity style={s.closeBtn} onPress={() => router.back()}>
-              <Text style={s.closeTxt}>✕</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Meal type */}
-          <Text style={s.secLabel}>Which meal?</Text>
-          <View style={s.mealRow}>
-            {MEAL_TYPES.map((m) => (
-              <TouchableOpacity
-                key={m.label}
-                style={[s.mealChip, mealType === m.label && s.mealChipOn]}
-                onPress={() => setMealType(m.label)}
-                activeOpacity={0.75}
-              >
-                <Text style={s.mealEmoji}>{m.emoji}</Text>
-                <Text style={[s.mealTxt, mealType === m.label && s.mealTxtOn]}>
-                  {m.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Input */}
-          <Text style={s.secLabel}>What did you eat?</Text>
-          <View style={[s.inputWrap, SHADOW.sm]}>
-            <TextInput
-              style={s.input}
-              placeholder="e.g. 2 rotis with dal makhani and lassi..."
-              placeholderTextColor={COLORS.muted}
-              value={input}
-              onChangeText={setInput}
-              multiline
-              autoFocus
-            />
-          </View>
-
-          {/* Suggestions */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            style={{ marginBottom: rs(20) }}
-          >
-            {SUGGESTIONS.map((sg) => (
-              <TouchableOpacity
-                key={sg}
-                style={s.sugg}
-                onPress={() => setInput(sg)}
-              >
-                <Text style={s.suggTxt}>{sg}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          {/* Analyse btn */}
-          <TouchableOpacity
-            style={[
-              s.analyseBtn,
-              (!input.trim() || loading) && s.analyseBtnOff,
-            ]}
-            onPress={analyse}
-            disabled={!input.trim() || loading}
-            activeOpacity={0.85}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={s.analyseTxt}>Analyse Nutrition</Text>
-            )}
+        {/* Header */}
+        <View style={s.header}>
+          <Text style={s.title}>Log a Meal</Text>
+          <TouchableOpacity style={s.closeBtn} onPress={() => router.back()}>
+            <Text style={s.closeTxt}>✕</Text>
           </TouchableOpacity>
+        </View>
 
-          {/* Error */}
-          {error && (
-            <View style={s.errorCard}>
-              <Text style={s.errorTxt}>⚠️ {error}</Text>
-            </View>
+        {/* Meal type */}
+        <Text style={s.secLabel}>Which meal?</Text>
+        <View style={s.mealRow}>
+          {MEAL_TYPES.map((m) => (
+            <TouchableOpacity
+              key={m.label}
+              style={[s.mealChip, mealType === m.label && s.mealChipOn]}
+              onPress={() => setMealType(m.label)}
+              activeOpacity={0.75}
+            >
+              <Text style={s.mealEmoji}>{m.emoji}</Text>
+              <Text style={[s.mealTxt, mealType === m.label && s.mealTxtOn]}>
+                {m.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Input */}
+        <Text style={s.secLabel}>What did you eat?</Text>
+        <View style={[s.inputWrap, SHADOW.sm]}>
+          <TextInput
+            style={s.input}
+            placeholder="e.g. 2 rotis with dal makhani and lassi..."
+            placeholderTextColor={COLORS.muted}
+            value={input}
+            onChangeText={setInput}
+            multiline
+            autoFocus
+          />
+        </View>
+
+        {/* Suggestions */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginBottom: rs(20) }}
+        >
+          {SUGGESTIONS.map((sg) => (
+            <TouchableOpacity
+              key={sg}
+              style={s.sugg}
+              onPress={() => setInput(sg)}
+            >
+              <Text style={s.suggTxt}>{sg}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {/* Analyse btn */}
+        <TouchableOpacity
+          style={[s.analyseBtn, (!input.trim() || loading) && s.analyseBtnOff]}
+          onPress={analyse}
+          disabled={!input.trim() || loading}
+          activeOpacity={0.85}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={s.analyseTxt}>Analyse Nutrition</Text>
           )}
+        </TouchableOpacity>
 
-          {/* Result */}
-          {result && (
-            <View style={[s.resultCard, SHADOW.md]}>
-              {/* Food items */}
-              {result.items.map((item, i) => (
+        {/* Error */}
+        {error && (
+          <View style={s.errorCard}>
+            <Text style={s.errorTxt}>⚠️ {error}</Text>
+          </View>
+        )}
+
+        {/* Result */}
+        {result && (
+          <View style={[s.resultCard, SHADOW.md]}>
+            {/* Food items */}
+            {result.items.map((item, i) => (
+              <View
+                key={i}
+                style={[s.itemRow, i < result.items.length - 1 && s.itemBorder]}
+              >
+                <Text style={s.itemEmoji}>{item.emoji}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={s.itemName}>{item.name}</Text>
+                  <Text style={s.itemQty}>{item.quantity}</Text>
+                </View>
+                <Text style={s.itemCal}>{item.calories} cal</Text>
+              </View>
+            ))}
+
+            {/* Macro strip */}
+            <View style={s.macroStrip}>
+              {[
+                { v: result.total.calories, l: "kcal", c: COLORS.red },
+                {
+                  v: `${result.total.protein}g`,
+                  l: "protein",
+                  c: COLORS.blue,
+                },
+                { v: `${result.total.carbs}g`, l: "carbs", c: COLORS.amber },
+                { v: `${result.total.fat}g`, l: "fat", c: COLORS.purple },
+                {
+                  v: `${result.total.fiber || 0}g`,
+                  l: "fiber",
+                  c: COLORS.green,
+                },
+              ].map((m, i, arr) => (
                 <View
-                  key={i}
-                  style={[
-                    s.itemRow,
-                    i < result.items.length - 1 && s.itemBorder,
-                  ]}
+                  key={m.l}
+                  style={[s.macroItem, i < arr.length - 1 && s.macroDivide]}
                 >
-                  <Text style={s.itemEmoji}>{item.emoji}</Text>
-                  <View style={{ flex: 1 }}>
-                    <Text style={s.itemName}>{item.name}</Text>
-                    <Text style={s.itemQty}>{item.quantity}</Text>
-                  </View>
-                  <Text style={s.itemCal}>{item.calories} cal</Text>
+                  <Text style={[s.macroVal, { color: m.c }]}>{m.v}</Text>
+                  <Text style={s.macroLbl}>{m.l}</Text>
                 </View>
               ))}
-
-              {/* Macro strip */}
-              <View style={s.macroStrip}>
-                {[
-                  { v: result.total.calories, l: "kcal", c: COLORS.red },
-                  {
-                    v: `${result.total.protein}g`,
-                    l: "protein",
-                    c: COLORS.blue,
-                  },
-                  { v: `${result.total.carbs}g`, l: "carbs", c: COLORS.amber },
-                  { v: `${result.total.fat}g`, l: "fat", c: COLORS.purple },
-                  {
-                    v: `${result.total.fiber || 0}g`,
-                    l: "fiber",
-                    c: COLORS.green,
-                  },
-                ].map((m, i, arr) => (
-                  <View
-                    key={m.l}
-                    style={[s.macroItem, i < arr.length - 1 && s.macroDivide]}
-                  >
-                    <Text style={[s.macroVal, { color: m.c }]}>{m.v}</Text>
-                    <Text style={s.macroLbl}>{m.l}</Text>
-                  </View>
-                ))}
-              </View>
-
-              {/* Tip */}
-              {result.tip && (
-                <View style={s.tipRow}>
-                  <View style={s.tipBadge}>
-                    <Text style={s.tipBadgeTxt}>AI Tip</Text>
-                  </View>
-                  <Text style={s.tipTxt}>{result.tip}</Text>
-                </View>
-              )}
-
-              {/* Add btn */}
-              <TouchableOpacity
-                style={[s.addBtn, added && s.addBtnDone]}
-                onPress={addToDiary}
-                disabled={added}
-                activeOpacity={0.85}
-              >
-                <Text style={s.addTxt}>
-                  {added ? "✓  Added!" : `Add to ${mealType}`}
-                </Text>
-              </TouchableOpacity>
             </View>
-          )}
 
-          <View style={{ height: rs(40) }} />
-        </ScrollView>
-      </KeyboardAvoidingView>
+            {/* Tip */}
+            {result.tip && (
+              <View style={s.tipRow}>
+                <View style={s.tipBadge}>
+                  <Text style={s.tipBadgeTxt}>AI Tip</Text>
+                </View>
+                <Text style={s.tipTxt}>{result.tip}</Text>
+              </View>
+            )}
+
+            {/* Add btn */}
+            <TouchableOpacity
+              style={[s.addBtn, added && s.addBtnDone]}
+              onPress={addToDiary}
+              disabled={added}
+              activeOpacity={0.85}
+            >
+              <Text style={s.addTxt}>
+                {added ? "✓  Added!" : `Add to ${mealType}`}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -269,7 +259,7 @@ export default function LogScreen() {
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   scroll: { flex: 1 },
-  content: { paddingHorizontal: rs(20), paddingTop: rs(8) },
+  content: { paddingHorizontal: rs(20), paddingTop: rs(26) },
 
   handle: {
     width: rs(40),
