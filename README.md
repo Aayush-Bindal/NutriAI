@@ -14,6 +14,28 @@ Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, 
 - **Secure by Default** — Your Gemini API key is stored in the device's secure enclave via `expo-secure-store`. All data stays on your device.
 - **Haptic Feedback** — Tactile responses on interactions throughout the app.
 
+## Why NutriAI?
+
+Most calorie tracking apps are slow, cluttered, and require manually searching through large food databases. NutriAI takes a different approach.
+
+**Natural Language Logging**
+Just describe what you ate — no scrolling through long food lists. The AI understands real meals like "2 roti with dal and sabzi".
+
+**No Ads, No Tracking**
+NutriAI is designed as a clean experience. No ads, no trackers, and no unnecessary data collection.
+
+**Your Data Stays On Your Device**
+All user data (meals, profile, weight logs) is stored locally on your phone. Nothing is uploaded to external servers. Even backups are exported manually as JSON files that you control.
+
+**Works With Real Food**
+Unlike many trackers focused on packaged Western foods, NutriAI understands common Indian meals such as roti, dal, poha, dosa, rajma chawal, and more.
+
+**No Locked Analytics**
+Most nutrition apps hide useful insights behind subscriptions. NutriAI keeps dashboards, weight tracking, and macro analytics fully accessible.
+
+**Built for Simplicity**
+The goal is to make calorie tracking frictionless: type your meal, get instant analysis, and move on with your day.
+
 ## Tech Stack
 
 | Layer        | Technology                                          |
