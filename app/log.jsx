@@ -174,7 +174,7 @@ export default function LogScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={s.analyseTxt}>Analyse Nutrition 🔍</Text>
+              <Text style={s.analyseTxt}>Analyse Nutrition</Text>
             )}
           </TouchableOpacity>
 
@@ -358,7 +358,7 @@ const s = StyleSheet.create({
     ...SHADOW.md,
   },
   analyseBtnOff: {
-    backgroundColor: COLORS.border,
+    backgroundColor: "#b5d6b8",
     shadowOpacity: 0,
     elevation: 0,
   },
