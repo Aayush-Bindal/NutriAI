@@ -12,7 +12,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { COLORS, rf, rs, SHADOW, W } from "../constants/theme";
@@ -247,7 +247,11 @@ function WelcomeStep({ onNext, onRestore }) {
           }}
           style={w.restoreBtn}
         >
-          <Ionicons name="cloud-download-outline" size={rf(16)} color={COLORS.green} />
+          <Ionicons
+            name="cloud-download-outline"
+            size={rf(16)}
+            color={COLORS.green}
+          />
           <Text style={w.restoreBtnText}>Restore from backup</Text>
         </TouchableOpacity>
       </View>
@@ -443,6 +447,47 @@ function Step1({ data, onChange, onNext, onBack }) {
 // STEP 2 — Weight, Height
 // ═══════════════════════════════════════════════════════════
 function Step2({ data, onChange, onNext, onBack }) {
+  const [heightUnit, setHeightUnit] = useState("cm");
+  const [feet, setFeet] = useState("");
+  const [inches, setInches] = useState("");
+
+  const toggleUnit = (unit) => {
+    if (unit === heightUnit) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (unit === "ft") {
+      const cm = parseFloat(data.height);
+      if (cm) {
+        const totalIn = cm / 2.54;
+        setFeet(String(Math.floor(totalIn / 12)));
+        setInches(String(Math.round(totalIn % 12)));
+      }
+    } else if (feet || inches) {
+      const cm = Math.round(
+        ((parseInt(feet) || 0) * 12 + (parseInt(inches) || 0)) * 2.54,
+      );
+      onChange({ height: String(cm) });
+    }
+    setHeightUnit(unit);
+  };
+
+  const onFeet = (v) => {
+    const val = v.replace(/[^0-9]/g, "");
+    setFeet(val);
+    const cm = Math.round(
+      ((parseInt(val) || 0) * 12 + (parseInt(inches) || 0)) * 2.54,
+    );
+    onChange({ height: String(cm) });
+  };
+
+  const onInches = (v) => {
+    const val = v.replace(/[^0-9]/g, "");
+    setInches(val);
+    const cm = Math.round(
+      ((parseInt(feet) || 0) * 12 + (parseInt(val) || 0)) * 2.54,
+    );
+    onChange({ height: String(cm) });
+  };
+
   const canNext = data.weight && data.height;
   return (
     <View style={st.container}>
@@ -467,16 +512,83 @@ function Step2({ data, onChange, onNext, onBack }) {
             placeholder="e.g. 70"
             unit="kg"
           />
-          <LabelInput
-            label="Height"
-            value={data.height}
-            onChangeText={(v) =>
-              onChange({ height: v.replace(/[^0-9.]/g, "") })
-            }
-            keyboardType="decimal-pad"
-            placeholder="e.g. 175"
-            unit="cm"
-          />
+
+          <View style={li.wrap}>
+            <View style={hu.labelRow}>
+              <Text style={li.label}>HEIGHT</Text>
+              <View style={hu.toggle}>
+                <TouchableOpacity
+                  style={[hu.toggleBtn, heightUnit === "cm" && hu.toggleBtnOn]}
+                  onPress={() => toggleUnit("cm")}
+                >
+                  <Text
+                    style={[
+                      hu.toggleTxt,
+                      heightUnit === "cm" && hu.toggleTxtOn,
+                    ]}
+                  >
+                    cm
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[hu.toggleBtn, heightUnit === "ft" && hu.toggleBtnOn]}
+                  onPress={() => toggleUnit("ft")}
+                >
+                  <Text
+                    style={[
+                      hu.toggleTxt,
+                      heightUnit === "ft" && hu.toggleTxtOn,
+                    ]}
+                  >
+                    ft/in
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            {heightUnit === "cm" ? (
+              <View style={li.inputRow}>
+                <TextInput
+                  style={li.input}
+                  value={data.height}
+                  onChangeText={(v) =>
+                    onChange({ height: v.replace(/[^0-9.]/g, "") })
+                  }
+                  keyboardType="decimal-pad"
+                  placeholder="e.g. 175"
+                  placeholderTextColor={COLORS.muted}
+                  selectionColor={COLORS.green}
+                />
+                <Text style={li.unit}>cm</Text>
+              </View>
+            ) : (
+              <View style={hu.ftRow}>
+                <View style={[li.inputRow, { flex: 1 }]}>
+                  <TextInput
+                    style={li.input}
+                    value={feet}
+                    onChangeText={onFeet}
+                    keyboardType="number-pad"
+                    placeholder="5"
+                    placeholderTextColor={COLORS.muted}
+                    selectionColor={COLORS.green}
+                  />
+                  <Text style={li.unit}>ft</Text>
+                </View>
+                <View style={[li.inputRow, { flex: 1 }]}>
+                  <TextInput
+                    style={li.input}
+                    value={inches}
+                    onChangeText={onInches}
+                    keyboardType="number-pad"
+                    placeholder="8"
+                    placeholderTextColor={COLORS.muted}
+                    selectionColor={COLORS.green}
+                  />
+                  <Text style={li.unit}>in</Text>
+                </View>
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Visual body card */}
@@ -768,12 +880,54 @@ const st = StyleSheet.create({
   },
 });
 
+const hu = StyleSheet.create({
+  labelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: rs(6),
+    marginLeft: rs(4),
+    marginRight: rs(4),
+  },
+  toggle: {
+    flexDirection: "row",
+    backgroundColor: COLORS.border,
+    borderRadius: rs(10),
+    padding: rs(2),
+  },
+  toggleBtn: {
+    paddingHorizontal: rs(12),
+    paddingVertical: rs(5),
+    borderRadius: rs(8),
+  },
+  toggleBtnOn: {
+    backgroundColor: COLORS.green,
+  },
+  toggleTxt: {
+    fontSize: rf(12),
+    fontWeight: "700",
+    color: COLORS.mid,
+  },
+  toggleTxtOn: {
+    color: COLORS.white,
+  },
+  ftRow: {
+    flexDirection: "row",
+    gap: rs(10),
+  },
+});
+
 // ═══════════════════════════════════════════════════════════
 // MAIN ONBOARDING ORCHESTRATOR
 // ═══════════════════════════════════════════════════════════
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
-  const { updateProfile, completeOnboarding, restoreFromBackup, addWeightEntry } = useProfile();
+  const {
+    updateProfile,
+    completeOnboarding,
+    restoreFromBackup,
+    addWeightEntry,
+  } = useProfile();
   const [step, setStep] = useState(0);
 
   // Local draft data for all fields
@@ -830,7 +984,9 @@ export default function Onboarding() {
   const renderStep = () => {
     switch (step) {
       case 0:
-        return <WelcomeStep onNext={() => animateTo(1)} onRestore={handleRestore} />;
+        return (
+          <WelcomeStep onNext={() => animateTo(1)} onRestore={handleRestore} />
+        );
       case 1:
         return (
           <Step1

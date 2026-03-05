@@ -4,15 +4,15 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    LayoutAnimation,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  LayoutAnimation,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, { Circle, Polyline } from "react-native-svg";
@@ -136,7 +136,20 @@ function WeightGraph({ data, onDelete }) {
 
   const formatDate = (iso) => {
     const d = new Date(iso);
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     return `${months[d.getMonth()]} ${d.getDate()}`;
   };
 
@@ -231,8 +244,15 @@ function WeightGraph({ data, onDelete }) {
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { profile, updateProfile, weightHistory, addWeightEntry, removeWeightEntry, createBackup, restoreFromBackup } =
-    useProfile();
+  const {
+    profile,
+    updateProfile,
+    weightHistory,
+    addWeightEntry,
+    removeWeightEntry,
+    createBackup,
+    restoreFromBackup,
+  } = useProfile();
 
   const [form, setForm] = useState({
     name: profile.name || "",
@@ -248,6 +268,46 @@ export default function ProfileScreen() {
   const [dirty, setDirty] = useState(false);
   const [profileExpanded, setProfileExpanded] = useState(false);
   const [weightInput, setWeightInput] = useState("");
+  const [heightUnit, setHeightUnit] = useState("cm");
+  const [htFeet, setHtFeet] = useState("");
+  const [htInches, setHtInches] = useState("");
+
+  const switchHeightUnit = (unit) => {
+    if (unit === heightUnit) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    if (unit === "ft") {
+      const cm = parseFloat(form.height);
+      if (cm) {
+        const totalIn = cm / 2.54;
+        setHtFeet(String(Math.floor(totalIn / 12)));
+        setHtInches(String(Math.round(totalIn % 12)));
+      }
+    } else if (htFeet || htInches) {
+      const cm = Math.round(
+        ((parseInt(htFeet) || 0) * 12 + (parseInt(htInches) || 0)) * 2.54,
+      );
+      set("height", String(cm));
+    }
+    setHeightUnit(unit);
+  };
+
+  const handleHtFeetChange = (v) => {
+    const val = v.replace(/[^0-9]/g, "");
+    setHtFeet(val);
+    const cm = Math.round(
+      ((parseInt(val) || 0) * 12 + (parseInt(htInches) || 0)) * 2.54,
+    );
+    set("height", String(cm));
+  };
+
+  const handleHtInchesChange = (v) => {
+    const val = v.replace(/[^0-9]/g, "");
+    setHtInches(val);
+    const cm = Math.round(
+      ((parseInt(htFeet) || 0) * 12 + (parseInt(val) || 0)) * 2.54,
+    );
+    set("height", String(cm));
+  };
 
   const set = (key, val) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -288,8 +348,13 @@ export default function ProfileScreen() {
           onPress: async () => {
             const result = await restoreFromBackup();
             if (result.success) {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert("Restored", "Your data has been restored. Please restart the app.");
+              Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
+              Alert.alert(
+                "Restored",
+                "Your data has been restored. Please restart the app.",
+              );
             } else if (!result.canceled) {
               Alert.alert("Error", result.error || "Failed to restore backup.");
             }
@@ -316,7 +381,9 @@ export default function ProfileScreen() {
     // After deletion, update profile weight to the latest remaining entry
     const remaining = weightHistory.filter((e) => e.id !== id);
     if (remaining.length > 0) {
-      const sorted = [...remaining].sort((a, b) => new Date(b.date) - new Date(a.date));
+      const sorted = [...remaining].sort(
+        (a, b) => new Date(b.date) - new Date(a.date),
+      );
       const latestWeight = String(sorted[0].weight);
       updateProfile({ weight: latestWeight });
       setForm((p) => ({ ...p, weight: latestWeight }));
@@ -327,10 +394,17 @@ export default function ProfileScreen() {
   };
 
   // Derive current weight from most recent weight history entry
-  const latestEntry = weightHistory.length > 0
-    ? [...weightHistory].sort((a, b) => new Date(b.date) - new Date(a.date))[0]
-    : null;
-  const currentWeight = latestEntry ? latestEntry.weight : (form.weight ? parseFloat(form.weight) : null);
+  const latestEntry =
+    weightHistory.length > 0
+      ? [...weightHistory].sort(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        )[0]
+      : null;
+  const currentWeight = latestEntry
+    ? latestEntry.weight
+    : form.weight
+      ? parseFloat(form.weight)
+      : null;
   const bmi =
     currentWeight && form.height
       ? (currentWeight / Math.pow(parseFloat(form.height) / 100, 2)).toFixed(1)
@@ -492,20 +566,83 @@ export default function ProfileScreen() {
                 </View>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={s.fieldLabel}>HEIGHT</Text>
-                <View style={s.inputBox}>
-                  <TextInput
-                    style={s.inputBoxText}
-                    value={form.height}
-                    onChangeText={(v) =>
-                      set("height", v.replace(/[^0-9.]/g, ""))
-                    }
-                    keyboardType="decimal-pad"
-                    placeholder="175"
-                    placeholderTextColor={COLORS.muted}
-                  />
-                  <Text style={s.inputUnit}>cm</Text>
+                <View style={s.fieldLabelRow}>
+                  <Text style={s.fieldLabel}>HEIGHT</Text>
+                  <View style={s.htToggle}>
+                    <TouchableOpacity
+                      style={[
+                        s.htToggleBtn,
+                        heightUnit === "cm" && s.htToggleBtnOn,
+                      ]}
+                      onPress={() => switchHeightUnit("cm")}
+                    >
+                      <Text
+                        style={[
+                          s.htToggleTxt,
+                          heightUnit === "cm" && s.htToggleTxtOn,
+                        ]}
+                      >
+                        cm
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        s.htToggleBtn,
+                        heightUnit === "ft" && s.htToggleBtnOn,
+                      ]}
+                      onPress={() => switchHeightUnit("ft")}
+                    >
+                      <Text
+                        style={[
+                          s.htToggleTxt,
+                          heightUnit === "ft" && s.htToggleTxtOn,
+                        ]}
+                      >
+                        ft/in
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
+                {heightUnit === "cm" ? (
+                  <View style={s.inputBox}>
+                    <TextInput
+                      style={s.inputBoxText}
+                      value={form.height}
+                      onChangeText={(v) =>
+                        set("height", v.replace(/[^0-9.]/g, ""))
+                      }
+                      keyboardType="decimal-pad"
+                      placeholder="175"
+                      placeholderTextColor={COLORS.muted}
+                    />
+                    <Text style={s.inputUnit}>cm</Text>
+                  </View>
+                ) : (
+                  <View style={s.htFtRow}>
+                    <View style={[s.inputBox, { flex: 1 }]}>
+                      <TextInput
+                        style={s.inputBoxText}
+                        value={htFeet}
+                        onChangeText={handleHtFeetChange}
+                        keyboardType="number-pad"
+                        placeholder="5"
+                        placeholderTextColor={COLORS.muted}
+                      />
+                      <Text style={s.inputUnit}>ft</Text>
+                    </View>
+                    <View style={[s.inputBox, { flex: 1 }]}>
+                      <TextInput
+                        style={s.inputBoxText}
+                        value={htInches}
+                        onChangeText={handleHtInchesChange}
+                        keyboardType="number-pad"
+                        placeholder="8"
+                        placeholderTextColor={COLORS.muted}
+                      />
+                      <Text style={s.inputUnit}>in</Text>
+                    </View>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -898,6 +1035,38 @@ const s = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: rs(8),
+  },
+  fieldLabelRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: rs(8),
+  },
+  htToggle: {
+    flexDirection: "row",
+    backgroundColor: COLORS.border,
+    borderRadius: rs(8),
+    padding: rs(2),
+  },
+  htToggleBtn: {
+    paddingHorizontal: rs(8),
+    paddingVertical: rs(3),
+    borderRadius: rs(6),
+  },
+  htToggleBtnOn: {
+    backgroundColor: COLORS.green,
+  },
+  htToggleTxt: {
+    fontSize: rf(9),
+    fontWeight: "700",
+    color: COLORS.mid,
+  },
+  htToggleTxtOn: {
+    color: COLORS.white,
+  },
+  htFtRow: {
+    flexDirection: "row",
+    gap: rs(6),
   },
 
   // ─ Rows ─
