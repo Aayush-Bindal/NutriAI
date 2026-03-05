@@ -1,11 +1,12 @@
+import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useEffect, useRef } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { COLORS, SHADOW, rf, rs } from "../constants/theme";
 
@@ -25,7 +26,12 @@ export function generateWeekDays() {
   });
 }
 
-export default function DateStrip({ weekDays, selectedIdx, onDayPress }) {
+export default function DateStrip({
+  weekDays,
+  selectedIdx,
+  onDayPress,
+  onCalendarPress,
+}) {
   const dateStripRef = useRef(null);
 
   useEffect(() => {
@@ -37,6 +43,11 @@ export default function DateStrip({ weekDays, selectedIdx, onDayPress }) {
   const handleDayPress = (idx) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onDayPress(idx);
+  };
+
+  const handleCalendarPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onCalendarPress?.();
   };
 
   return (
@@ -65,6 +76,17 @@ export default function DateStrip({ weekDays, selectedIdx, onDayPress }) {
             )}
           </TouchableOpacity>
         ))}
+        <TouchableOpacity
+          style={s.calendarChip}
+          onPress={handleCalendarPress}
+          activeOpacity={0.75}
+        >
+          <Ionicons
+            name="calendar-outline"
+            size={rf(22)}
+            color={COLORS.green}
+          />
+        </TouchableOpacity>
       </ScrollView>
     </View>
   );
@@ -99,4 +121,13 @@ const s = StyleSheet.create({
     marginTop: rs(2),
   },
   dotOn: { backgroundColor: "#fff" },
+  calendarChip: {
+    width: rs(54),
+    paddingVertical: rs(12),
+    borderRadius: rs(20),
+    backgroundColor: COLORS.card,
+    alignItems: "center",
+    justifyContent: "center",
+    ...SHADOW.sm,
+  },
 });
