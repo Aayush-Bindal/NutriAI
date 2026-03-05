@@ -4,8 +4,10 @@ import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+    ActivityIndicator,
     Alert,
     LayoutAnimation,
+    Linking,
     Platform,
     ScrollView,
     StyleSheet,
@@ -48,6 +50,7 @@ export default function ProfileScreen() {
   const [dirty, setDirty] = useState(false);
   const [profileExpanded, setProfileExpanded] = useState(false);
   const [weightInput, setWeightInput] = useState("");
+  const [checking, setChecking] = useState(false);
   const [heightUnit, setHeightUnit] = useState("cm");
   const [htFeet, setHtFeet] = useState("");
   const [htInches, setHtInches] = useState("");
@@ -105,6 +108,52 @@ export default function ProfileScreen() {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setProfileExpanded((p) => !p);
+  };
+
+  // ─── Check for Updates ───────────────────────────────
+  const checkForUpdates = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setChecking(true);
+    try {
+      const res = await fetch(
+        "https://api.github.com/repos/Aayush-Bindal/NutriAI/releases/latest",
+      );
+      if (!res.ok) throw new Error("GitHub API error");
+      const release = await res.json();
+      const remote = (release.tag_name || "").replace(/^v/, "");
+      const isNewer = remote.split(".").some((part, i) => {
+        const r = parseInt(part) || 0;
+        const l = parseInt((appVersion.split(".") || [])[i]) || 0;
+        if (r > l) return true;
+        if (r < l) return false; // older segment → stop
+        return false;
+      });
+
+      if (isNewer) {
+        const apk = (release.assets || []).find((a) => a.name.endsWith(".apk"));
+        const url = apk ? apk.browser_download_url : release.html_url;
+        Alert.alert(
+          `Update Available — v${remote}`,
+          release.body || "A new version is available.",
+          [
+            { text: "Later", style: "cancel" },
+            { text: "Download", onPress: () => Linking.openURL(url) },
+          ],
+        );
+      } else {
+        Alert.alert(
+          "Up to Date",
+          `You're on the latest version (v${appVersion}).`,
+        );
+      }
+    } catch {
+      Alert.alert(
+        "Error",
+        "Couldn't check for updates. Please try again later.",
+      );
+    } finally {
+      setChecking(false);
+    }
   };
 
   // ─── Backup ──────────────────────────────────────────
@@ -359,6 +408,25 @@ export default function ProfileScreen() {
         <View style={s.footer}>
           <Text style={s.footerName}>NutriAI</Text>
           <Text style={s.footerVersion}>v{appVersion}</Text>
+          <TouchableOpacity
+            style={s.updateBtn}
+            activeOpacity={0.7}
+            onPress={checkForUpdates}
+            disabled={checking}
+          >
+            {checking ? (
+              <ActivityIndicator size="small" color={COLORS.mid} />
+            ) : (
+              <>
+                <Ionicons
+                  name="cloud-download-outline"
+                  size={rf(14)}
+                  color={COLORS.mid}
+                />
+                <Text style={s.updateTxt}>Check for Updates</Text>
+              </>
+            )}
+          </TouchableOpacity>
         </View>
       </ScrollView>
 
@@ -598,6 +666,21 @@ const s = StyleSheet.create({
     fontWeight: "600",
     color: COLORS.muted,
     marginTop: rs(4),
+  },
+  updateBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: rs(6),
+    marginTop: rs(10),
+    paddingVertical: rs(8),
+    paddingHorizontal: rs(14),
+    backgroundColor: COLORS.cardAlt,
+    borderRadius: rs(10),
+  },
+  updateTxt: {
+    fontSize: rf(12),
+    fontWeight: "600",
+    color: COLORS.mid,
   },
 
   // ─ Save dock ─
