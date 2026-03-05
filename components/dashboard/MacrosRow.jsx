@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../constants/theme";
+import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 
 export default function MacrosRow({ totals, macroGoals }) {
   const goals = macroGoals || { protein: 150, carbs: 225, fat: 56, fiber: 25 };

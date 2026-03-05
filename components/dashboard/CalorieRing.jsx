@@ -1,7 +1,12 @@
 import { useEffect } from "react";
+import Animated, {
+    Easing,
+    useAnimatedProps,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 import Svg, { Circle, Text as SvgText } from "react-native-svg";
-import Animated, { useSharedValue, useAnimatedProps, withTiming, Easing } from "react-native-reanimated";
-import { COLORS, rs, rf } from "../constants/theme";
+import { COLORS, rf, rs } from "../../constants/theme";
 
 // Create an animatable version of the SVG Circle
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -12,10 +17,11 @@ export default function CalorieRing({ eaten = 0, goal = 2000 }) {
   const cx = size / 2;
   const cy = size / 2;
   const circ = 2 * Math.PI * r;
-  
+
   // Visual progress still fills up as you eat
   const pct = Math.min(eaten / goal, 1);
-  const color = pct > 0.95 ? COLORS.red : pct > 0.75 ? COLORS.amber : COLORS.green;
+  const color =
+    pct > 0.95 ? COLORS.red : pct > 0.75 ? COLORS.amber : COLORS.green;
 
   // Calculate the remaining calories for the center text
   const left = Math.max(goal - eaten, 0);
@@ -42,25 +48,49 @@ export default function CalorieRing({ eaten = 0, goal = 2000 }) {
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       {/* Background Track */}
-      <Circle cx={cx} cy={cy} r={r} fill="none" stroke={COLORS.greenLight} strokeWidth={rs(12)} />
-      
+      <Circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke={COLORS.greenLight}
+        strokeWidth={rs(12)}
+      />
+
       {/* Animated Foreground Progress */}
       <AnimatedCircle
-        cx={cx} cy={cy} r={r} fill="none"
-        stroke={color} strokeWidth={rs(12)}
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke={color}
+        strokeWidth={rs(12)}
         animatedProps={animatedProps}
         strokeLinecap="round"
-        rotation="-90" origin={`${cx}, ${cy}`}
+        rotation="-90"
+        origin={`${cx}, ${cy}`}
       />
-      
+
       {/* Text inside the ring */}
-      <SvgText x={cx} y={cy - rf(4)} textAnchor="middle"
-        fill={COLORS.dark} fontSize={rf(28)} fontWeight="900">
+      <SvgText
+        x={cx}
+        y={cy - rf(4)}
+        textAnchor="middle"
+        fill={COLORS.dark}
+        fontSize={rf(28)}
+        fontWeight="900"
+      >
         {left}
       </SvgText>
-      
-      <SvgText x={cx} y={cy + rf(16)} textAnchor="middle"
-        fill={COLORS.muted} fontSize={rf(12)} fontWeight="700">
+
+      <SvgText
+        x={cx}
+        y={cy + rf(16)}
+        textAnchor="middle"
+        fill={COLORS.muted}
+        fontSize={rf(12)}
+        fontWeight="700"
+      >
         kcal Left
       </SvgText>
     </Svg>

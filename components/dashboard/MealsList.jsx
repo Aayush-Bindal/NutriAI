@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../constants/theme";
+import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 import MealSection from "./MealSection";
 
 export default function MealsList({ meals, isToday, selectedDay }) {

@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../constants/theme";
+import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 
 function getGreeting() {
   const hour = new Date().getHours();

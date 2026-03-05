@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../constants/theme";
+import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 
 export default function AiTip({ tip }) {
   if (!tip) return null;
