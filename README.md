@@ -104,7 +104,7 @@ Grab the latest APK from [GitHub Releases](../../releases/latest) and install it
 
 ```bash
 # Clone the repo
-git clone https://github.com/<your-username>/nutriai.git
+git clone https://github.com/aayush-bindal/nutriai.git
 cd nutriai
 
 # Install dependencies
