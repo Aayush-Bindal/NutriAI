@@ -8,11 +8,16 @@ Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, 
 
 ## Screenshots
 
-<!-- Add screenshots to the docs/ folder and update the paths below. Recommended width: 220px. -->
+<!-- HOW TO ADD SCREENSHOTS + VIDEO:
+  1. Open this file on GitHub.com → click the pencil (Edit) icon
+  2. Drag and drop your image/video files anywhere into the editor
+  3. GitHub uploads each file and inserts a CDN URL automatically
+  4. Paste those URLs into the src attributes below, then commit
+-->
 
 |     Dashboard      |      Log Meal      |      Profile       |
 | :----------------: | :----------------: | :----------------: |
-| <img src="docs/dashboard.jpg" width="220" /> | <img src="docs/log.jpg" width="220" /> | <img src="docs/profile.jpg" width="220" /> |
+| ![Dashboard](docs/dashboard.jpg) | ![Log Meal](docs/profile.jpg) | ![Profile](docs/profile.jpg) |
 
 ---
 
@@ -136,6 +141,17 @@ Grab the latest APK from [GitHub Releases](../../releases/latest) and install it
 
 > You'll still need your own Gemini API key to use AI meal logging. Get one for free at [aistudio.google.com](https://aistudio.google.com/).
 
+## Get Your API Key
+
+1. Go to [aistudio.google.com](https://aistudio.google.com/)
+2. Create a free API key
+3. Enter it during onboarding or in the Settings page
+
+**Video walkthrough:**
+
+<!-- Convert your screen recording to a GIF, put it in docs/api-key-guide.gif, then commit -->
+![API Key Walkthrough](docs/api-key-guide.gif)
+
 ## Getting Started
 
 ### Prerequisites
@@ -158,17 +174,6 @@ npx expo start
 ```
 
 Scan the QR code with **Expo Go** on your phone, or press `a` for Android emulator / `i` for iOS simulator.
-
-### Get Your API Key
-
-1. Go to [aistudio.google.com](https://aistudio.google.com/)
-2. Create a free API key
-3. Enter it during onboarding or in the Settings page
-
-**Video walkthrough:**
-
-<!-- Drop your video file at docs/api-key-guide.mp4 and it will render inline on GitHub. -->
-<video src="docs/api-key-guide.mp4" controls width="600"></video>
 
 ## How It Works
 
