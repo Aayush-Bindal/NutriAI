@@ -1,0 +1,60 @@
+GNU GENERAL PUBLIC LICENSE   Version 3, 29 June 2007  
+
+ Copyright (C) 2007 Free Software Foundation, Inc.  
+ 51 Franklin Street, Fifth Floor  
+ Boston, MA 02110-1301 USA  
+ Everyone is permitted to copy and distribute verbatim copies  
+ of this license document, but changing it is not allowed.  
+
+  
+ Preamble  
+
+ The GNU General Public License is a free, copyleft license for software and other kinds of works.  
+
+ When we speak of free software, we are referring to freedom, not price.  
+ Our General Public Licenses are designed to make sure that you have the freedom to share and change all versions of a program—to make sure it does what you wish it to do—and to make sure that you know you can do these things.  
+
+ Specifically, the General Public License gives you the following freedoms:  
+
+  0. You can run the program as you wish, for any purpose.  
+  1. You can study how the program works, and change it to make it do what you wish.  
+    Access to the source code is a precondition for this.  
+  2. You can redistribute copies of the original program so you can help others.  
+  3. You can distribute copies of your modified versions of the program. By doing this you can give the whole community a chance to benefit from your changes. Access to the source code is a precondition for this.  
+
+ To protect your rights, we need to make restrictions that forbid anyone to deny you these rights or to ask you to surrender the rights.  These restrictions translate to certain responsibilities for you if you distribute copies of the software, or if you modify it.  
+ For example, if you distribute copies of such a program, whether gratis or for a fee, you must pass on the same freedoms to the recipients of the program.  That means you must distribute a license that guarantees them these freedoms if you distribute the program.  
+
+ Similarly, if you modify the program and distribute it, you must claramente state that you have changed the program, and you must pass on the same freedoms to the recipients of the modified program.  An extra requirement is that you may not remove or alter any existing copyright notices in the program.  
+
+ You must also keep intact all the notices that refer to this License and to the absence of any warranty; and you must preserve these notices in such a way that they are reasonably visible to the users of the modified program.  
+
+ Lastly, you are not allowed to distribute the program without including a copy of this License along with it.  
+
+ There are some things that you are not allowed to do. For example, you may not impose any further restrictions on the rights granted by this License. You may not use the names, trademarks, service marks, or other identifiers of the Free Software Foundation or the authors of the Program  
+ in advertising or otherwise to promote the sale, use, or other dealings in the Program without the prior written authorization of the Free Software Foundation or the authors.  
+
+ Therefore, if you have not received the necessary permission, you may not use any of these names.  
+
+ THE PROGRAM IS DISTRIBUTED WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED; WITHOUT EVEN THE IMPLIED WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" AND ARE NOT RESPONSIBLE FOR ANYONE'S CLAIMS, DAMAGES OR OTHER LIABILITY  
+ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE PROGRAM OR THE USE OR OTHER DEALINGS IN THE PROGRAM.  
+
+ For each licensing term and condition, you can find the details in the rest of the document.  
+
+ 1. Source Code.  
+ The source code for this License is available from www.gnu.org/licenses/gpl-3.0.html  
+
+ 2. Acceptance  
+ The licenses are accepted by the user when the user offers to acquire the software.  
+
+ 3. Modification.  
+ You need the proper acknowledgement before you try to modify any software that is covered by GPL v3.  
+
+ 4. Distribution and Sharing  
+ Users have the right to share and distribute copies with others, and to modify it for personal use only.  
+
+ 5. Warranty Disclaimer and Liability Limitations.  
+ The article and software are provided "as is" without warranties of any kind.  
+
+  
+ End of terms.
