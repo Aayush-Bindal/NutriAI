@@ -195,4 +195,6 @@ Scan the QR code with **Expo Go** on your phone, or press `a` for Android emulat
 
 ## License
 
-This project is for personal/educational use.
+This project is licensed under the [GNU General Public License v3.0](LICENSE).
+
+You are free to use, modify, and distribute this project, but any derivative work must also be open source under the same license.
