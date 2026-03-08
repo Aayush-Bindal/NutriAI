@@ -8,18 +8,11 @@ Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, 
 
 ## Screenshots
 
-<!-- Add your screenshots here. Recommended size: 200–250px width each. -->
-<!-- Example: <img src="assets/images/screenshot-dashboard.png" width="220" /> -->
+<!-- Add screenshots to the docs/ folder and update the paths below. Recommended width: 220px. -->
 
 |     Dashboard      |      Log Meal      |      Profile       |
 | :----------------: | :----------------: | :----------------: |
-| _<img src="assets/images/dashboard.jpg" width="220" />_ | _<img src="assets/images/log.jpg" width="220" />_ | _<img src="assets/images/profile.jpg" width="220" />_ |
-
-<!-- To add images:
-  1. Put your screenshot files in assets/images/ (e.g. screenshot-dashboard.png)
-  2. Replace each *(add screenshot)* cell with:
-     <img src="assets/images/screenshot-dashboard.png" width="220" />
--->
+| <img src="docs/dashboard.jpg" width="220" /> | <img src="docs/log.jpg" width="220" /> | <img src="docs/profile.jpg" width="220" /> |
 
 ---
 
@@ -128,7 +121,8 @@ nutriai/
 │   ├── theme.js                  # Colors, responsive scaling (rs/rf), shadows
 │   └── gemini.js                 # Gemini API integration (primary + fallback models)
 │
-└── assets/images/                # Icons and screenshots
+├── assets/images/                # App icons (bundled into APK)
+└── docs/                         # README media (screenshots, videos — not bundled)
 ```
 
 ## Download
@@ -170,6 +164,11 @@ Scan the QR code with **Expo Go** on your phone, or press `a` for Android emulat
 1. Go to [aistudio.google.com](https://aistudio.google.com/)
 2. Create a free API key
 3. Enter it during onboarding or in the Settings page
+
+**Video walkthrough:**
+
+<!-- Drop your video file at docs/api-key-guide.mp4 and it will render inline on GitHub. -->
+<video src="docs/api-key-guide.mp4" controls width="600"></video>
 
 ## How It Works
 
