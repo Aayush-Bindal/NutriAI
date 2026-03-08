@@ -17,7 +17,7 @@ Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, 
 
 |     Dashboard      |      Log Meal      |      Profile       |
 | :----------------: | :----------------: | :----------------: |
-| ![Dashboard](docs/dashboard.jpg) | ![Log Meal](docs/profile.jpg) | ![Profile](docs/profile.jpg) |
+| ![Dashboard](docs/dashboard.jpg) | ![Log Meal](docs/log.jpg) | ![Profile](docs/profile.jpg) |
 
 ---
 
