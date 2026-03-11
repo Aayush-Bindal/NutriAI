@@ -9,16 +9,15 @@ import {
 } from "react-native";
 import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 
-const SUGGESTIONS = [
-  "2 roti + dal makhani",
-  "oats with banana",
-  "idli sambar",
-  "chicken sandwich",
-  "poha and chai",
-  "rajma chawal",
-];
-
-export default function FoodInput({ input, setInput, loading, onAnalyse }) {
+export default function FoodInput({
+  input,
+  setInput,
+  loading,
+  onAnalyse,
+  savedMeals,
+  onRemoveSavedMeal,
+  onSelectSavedMeal,
+}) {
   return (
     <>
       <Text style={s.secLabel}>What did you eat?</Text>
@@ -34,21 +33,24 @@ export default function FoodInput({ input, setInput, loading, onAnalyse }) {
         />
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ marginBottom: rs(20) }}
-      >
-        {SUGGESTIONS.map((sg) => (
-          <TouchableOpacity
-            key={sg}
-            style={s.sugg}
-            onPress={() => setInput(sg)}
-          >
-            <Text style={s.suggTxt}>{sg}</Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+      {savedMeals.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginBottom: rs(20) }}
+        >
+          {savedMeals.map((sg) => (
+            <TouchableOpacity
+              key={sg.label}
+              style={s.sugg}
+              onPress={() => onSelectSavedMeal(sg)}
+              onLongPress={() => onRemoveSavedMeal(sg.label)}
+            >
+              <Text style={s.suggTxt}>{sg.label}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
 
       <TouchableOpacity
         style={[s.analyseBtn, (!input.trim() || loading) && s.analyseBtnOff]}

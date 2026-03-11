@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
+  Keyboard,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,15 +19,14 @@ import { useProfile } from "../context/ProfileContext";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
-  if (h < 11) return "Breakfast";
-  if (h < 15) return "Lunch";
-  if (h < 20) return "Dinner";
-  return "Snack";
+  if (h < 12) return "Breakfast";
+  if (h < 18) return "Lunch";
+  return "Dinner";
 }
 
 export default function LogScreen() {
   const router = useRouter();
-  const { addMeal } = useMeals();
+  const { addMeal, savedMeals, saveMealWithData, removeSavedMeal } = useMeals();
   const { profile } = useProfile();
   const insets = useSafeAreaInsets();
 
@@ -39,6 +39,7 @@ export default function LogScreen() {
 
   const analyse = async () => {
     if (!input.trim() || loading) return;
+    Keyboard.dismiss();
 
     if (!profile.apiKey) {
       setError(
@@ -76,6 +77,14 @@ export default function LogScreen() {
     setTimeout(() => router.back(), 700);
   };
 
+  const selectSavedMeal = (meal) => {
+    Keyboard.dismiss();
+    setInput(meal.label);
+    setResult(meal.data);
+    setError(null);
+    setAdded(false);
+  };
+
   return (
     <View style={s.root}>
       <ScrollView
@@ -103,6 +112,9 @@ export default function LogScreen() {
           setInput={setInput}
           loading={loading}
           onAnalyse={analyse}
+          savedMeals={savedMeals}
+          onRemoveSavedMeal={removeSavedMeal}
+          onSelectSavedMeal={selectSavedMeal}
         />
 
         {error && (
@@ -117,6 +129,10 @@ export default function LogScreen() {
             mealType={mealType}
             added={added}
             onAdd={addToDiary}
+            onSaveMeal={() => saveMealWithData(input.trim(), result)}
+            isMealSaved={savedMeals.some(
+              (m) => m.label.toLowerCase() === input.trim().toLowerCase(),
+            )}
           />
         )}
       </ScrollView>

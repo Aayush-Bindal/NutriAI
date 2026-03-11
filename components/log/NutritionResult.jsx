@@ -1,7 +1,22 @@
+import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 
-export default function NutritionResult({ result, mealType, added, onAdd }) {
+export default function NutritionResult({
+  result,
+  mealType,
+  added,
+  onAdd,
+  onSaveMeal,
+  isMealSaved,
+}) {
+  const [saved, setSaved] = useState(false);
+
+  const handleSave = () => {
+    onSaveMeal();
+    setSaved(true);
+  };
+
   return (
     <View style={[s.resultCard, SHADOW.md]}>
       {/* Food items */}
@@ -48,6 +63,22 @@ export default function NutritionResult({ result, mealType, added, onAdd }) {
         </View>
       )}
 
+      {/* Save meal button */}
+      {!isMealSaved && !saved && (
+        <TouchableOpacity
+          style={s.saveBtn}
+          onPress={handleSave}
+          activeOpacity={0.85}
+        >
+          <Text style={s.saveTxt}>Save Meal for Quick Access</Text>
+        </TouchableOpacity>
+      )}
+      {(isMealSaved || saved) && (
+        <View style={s.savedBadge}>
+          <Text style={s.savedTxt}>Saved to Quick Meals</Text>
+        </View>
+      )}
+
       {/* Add btn */}
       <TouchableOpacity
         style={[s.addBtn, added && s.addBtnDone]}
@@ -56,7 +87,7 @@ export default function NutritionResult({ result, mealType, added, onAdd }) {
         activeOpacity={0.85}
       >
         <Text style={s.addTxt}>
-          {added ? "✓  Added!" : `Add to ${mealType}`}
+          {added ? "\u2713  Added!" : `Add to ${mealType}`}
         </Text>
       </TouchableOpacity>
     </View>
@@ -120,10 +151,31 @@ const s = StyleSheet.create({
   addBtn: {
     backgroundColor: "#2D3B2D",
     margin: rs(14),
+    marginTop: 0,
     borderRadius: rs(16),
     paddingVertical: rs(16),
     alignItems: "center",
   },
   addBtnDone: { backgroundColor: COLORS.green },
   addTxt: { color: "#fff", fontSize: rf(16), fontWeight: "700" },
+  saveBtn: {
+    margin: rs(14),
+    marginBottom: rs(8),
+    borderRadius: rs(16),
+    paddingVertical: rs(14),
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: COLORS.green,
+    backgroundColor: COLORS.greenLight,
+  },
+  saveTxt: { color: COLORS.green, fontSize: rf(14), fontWeight: "700" },
+  savedBadge: {
+    margin: rs(14),
+    marginBottom: rs(8),
+    borderRadius: rs(16),
+    paddingVertical: rs(14),
+    alignItems: "center",
+    backgroundColor: COLORS.greenLight,
+  },
+  savedTxt: { color: COLORS.green, fontSize: rf(13), fontWeight: "600" },
 });
