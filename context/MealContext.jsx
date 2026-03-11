@@ -21,9 +21,12 @@ const dateKey = (date) => {
   return `meals_${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
+const SAVED_MEALS_KEY = "saved_meals";
+
 export function MealProvider({ children }) {
   const [cache, setCache] = useState({}); // { "meals_2025-03-05": { meals, totals, tip } }
   const [activeDate, setActiveDate] = useState(new Date());
+  const [savedMeals, setSavedMeals] = useState([]); // [{ label, data }, ...]
 
   // Load a specific date from AsyncStorage into cache
   const loadDate = useCallback(
@@ -54,7 +57,41 @@ export function MealProvider({ children }) {
   // Load today on mount
   useEffect(() => {
     loadDate(new Date());
+    // Load saved meals
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(SAVED_MEALS_KEY);
+        if (raw) setSavedMeals(JSON.parse(raw));
+      } catch {}
+    })();
   }, []);
+
+  // Save a meal with its full nutrition data for quick access
+  const saveMealWithData = async (label, data) => {
+    const trimmed = label.trim();
+    if (!trimmed) return;
+    // Avoid duplicates (case-insensitive)
+    if (
+      savedMeals.some(
+        (m) => m.label.toLowerCase() === trimmed.toLowerCase(),
+      )
+    )
+      return;
+    const updated = [{ label: trimmed, data }, ...savedMeals];
+    setSavedMeals(updated);
+    try {
+      await AsyncStorage.setItem(SAVED_MEALS_KEY, JSON.stringify(updated));
+    } catch {}
+  };
+
+  // Remove a saved meal by label
+  const removeSavedMeal = async (label) => {
+    const updated = savedMeals.filter((m) => m.label !== label);
+    setSavedMeals(updated);
+    try {
+      await AsyncStorage.setItem(SAVED_MEALS_KEY, JSON.stringify(updated));
+    } catch {}
+  };
 
   // Switch active date — loads from storage if not cached
   const switchDate = useCallback(
@@ -101,7 +138,10 @@ export function MealProvider({ children }) {
     const updated = {
       meals: { ...current.meals, [mealType]: list },
       totals: {
-        calories: Math.max(0, current.totals.calories - (removed.calories || 0)),
+        calories: Math.max(
+          0,
+          current.totals.calories - (removed.calories || 0),
+        ),
         protein: Math.max(0, current.totals.protein - (removed.protein || 0)),
         carbs: Math.max(0, current.totals.carbs - (removed.carbs || 0)),
         fat: Math.max(0, current.totals.fat - (removed.fat || 0)),
@@ -127,6 +167,9 @@ export function MealProvider({ children }) {
         switchDate,
         addMeal,
         removeItem,
+        savedMeals,
+        saveMealWithData,
+        removeSavedMeal,
       }}
     >
       {children}
