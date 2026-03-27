@@ -18,6 +18,11 @@ export default function FoodInput({
   onRemoveSavedMeal,
   onSelectSavedMeal,
 }) {
+  // Filter out invalid entries (handle old string format or corrupted data)
+  const validMeals = (savedMeals || []).filter(
+    (m) => m && typeof m === "object" && m.label
+  );
+
   return (
     <>
       <Text style={s.secLabel}>What did you eat?</Text>
@@ -29,19 +34,18 @@ export default function FoodInput({
           value={input}
           onChangeText={setInput}
           multiline
-          autoFocus
         />
       </View>
 
-      {savedMeals.length > 0 && (
+      {validMeals.length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={{ marginBottom: rs(20) }}
         >
-          {savedMeals.map((sg) => (
+          {validMeals.map((sg, idx) => (
             <TouchableOpacity
-              key={sg.label}
+              key={sg.label || idx}
               style={s.sugg}
               onPress={() => onSelectSavedMeal(sg)}
               onLongPress={() => onRemoveSavedMeal(sg.label)}

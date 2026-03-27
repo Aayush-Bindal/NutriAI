@@ -57,12 +57,28 @@ export function MealProvider({ children }) {
   // Load today on mount
   useEffect(() => {
     loadDate(new Date());
-    // Load saved meals
+    // Load saved meals and clean up any invalid entries
     (async () => {
       try {
         const raw = await AsyncStorage.getItem(SAVED_MEALS_KEY);
-        if (raw) setSavedMeals(JSON.parse(raw));
-      } catch {}
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          // Filter to only valid objects with label and data
+          const valid = Array.isArray(parsed)
+            ? parsed.filter(
+                (m) => m && typeof m === "object" && m.label && m.data,
+              )
+            : [];
+          setSavedMeals(valid);
+          // Save back cleaned data if there were invalid entries
+          if (valid.length !== parsed.length) {
+            await AsyncStorage.setItem(SAVED_MEALS_KEY, JSON.stringify(valid));
+          }
+        }
+      } catch {
+        // Clear corrupted data
+        await AsyncStorage.removeItem(SAVED_MEALS_KEY);
+      }
     })();
   }, []);
 
@@ -71,11 +87,7 @@ export function MealProvider({ children }) {
     const trimmed = label.trim();
     if (!trimmed) return;
     // Avoid duplicates (case-insensitive)
-    if (
-      savedMeals.some(
-        (m) => m.label.toLowerCase() === trimmed.toLowerCase(),
-      )
-    )
+    if (savedMeals.some((m) => m.label.toLowerCase() === trimmed.toLowerCase()))
       return;
     const updated = [{ label: trimmed, data }, ...savedMeals];
     setSavedMeals(updated);
