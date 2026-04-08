@@ -21,6 +21,7 @@ import UpdateModal from "../components/profile/UpdateModal";
 import WeightSection from "../components/profile/WeightSection";
 import { COLORS, rf, rs, SHADOW } from "../constants/theme";
 import { useProfile } from "../context/ProfileContext";
+import { checkForAppUpdate } from "../utils/appUpdate";
 
 // ═════════════════════════════════════════════════════════
 export default function ProfileScreen() {
@@ -116,32 +117,8 @@ export default function ProfileScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setChecking(true);
     try {
-      const res = await fetch(
-        "https://api.github.com/repos/Aayush-Bindal/NutriAI/releases/latest",
-      );
-      if (!res.ok) throw new Error("GitHub API error");
-      const release = await res.json();
-      const remote = (release.tag_name || "").replace(/^v/, "");
-      const isNewer = remote.split(".").some((part, i) => {
-        const r = parseInt(part) || 0;
-        const l = parseInt((appVersion.split(".") || [])[i]) || 0;
-        if (r > l) return true;
-        if (r < l) return false; // older segment → stop
-        return false;
-      });
-
-      if (isNewer) {
-        const apk = (release.assets || []).find((a) => a.name.endsWith(".apk"));
-        const url = apk ? apk.browser_download_url : release.html_url;
-        setUpdateModal({
-          status: "available",
-          version: remote,
-          notes: release.body || "A new version is available.",
-          url,
-        });
-      } else {
-        setUpdateModal({ status: "uptodate" });
-      }
+      const result = await checkForAppUpdate(appVersion);
+      setUpdateModal(result);
     } catch {
       setUpdateModal({ status: "error" });
     } finally {

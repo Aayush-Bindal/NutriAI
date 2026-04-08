@@ -87,7 +87,13 @@ const mdStyles = {
   hr: { backgroundColor: COLORS.border, height: 1, marginVertical: rs(8) },
 };
 
-export default function UpdateModal({ data, appVersion, onClose }) {
+export default function UpdateModal({
+  data,
+  appVersion,
+  onClose,
+  showSkipAction = false,
+  onSkipVersion,
+}) {
   if (!data) return null;
   const cfg = STATES[data.status];
 
@@ -148,6 +154,15 @@ export default function UpdateModal({ data, appVersion, onClose }) {
                 >
                   <Text style={s.secondaryTxt}>Later</Text>
                 </TouchableOpacity>
+                {showSkipAction && onSkipVersion ? (
+                  <TouchableOpacity
+                    style={s.secondaryBtn}
+                    activeOpacity={0.7}
+                    onPress={() => onSkipVersion(data.version)}
+                  >
+                    <Text style={s.secondaryTxt}>Don{"'"}t show again</Text>
+                  </TouchableOpacity>
+                ) : null}
               </>
             )}
 
