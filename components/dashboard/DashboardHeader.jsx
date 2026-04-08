@@ -18,7 +18,7 @@ export default function DashboardHeader({ name }) {
       <View>
         <Text style={s.appName}>NutriAI</Text>
         <Text style={s.sub}>
-          {getGreeting()}, <Text style={s.userName}>{name || "there"}</Text> 👋
+          {getGreeting()}, <Text style={s.userName}>{name || "there"}</Text>
         </Text>
       </View>
       <TouchableOpacity
