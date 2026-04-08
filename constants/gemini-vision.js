@@ -22,14 +22,34 @@ Rules:
 - Pick the most relevant emoji for each food item
 - If the image is clearly not food, return { "error": "not_food" }`;
 
-async function callGemini(model, base64Image, mimeType, apiKey) {
+const LABEL_PROMPT = `You are a nutrition data extractor.
+Analyze this image of a food packaging or nutrition label and extract the per-serving nutritional information. 
+Return ONLY a valid JSON object. No markdown, no explanation, nothing else.
+
+Format:
+{
+  "items": [
+    { "name": "Packaged Food", "quantity": "1 serving", "calories": 240, "protein": 6, "carbs": 40, "fat": 4, "fiber": 3, "emoji": "📦" }
+  ],
+  "total": { "calories": 240, "protein": 6, "carbs": 40, "fat": 4, "fiber": 3 },
+  "meal": "Snack",
+  "tip": "Nutritional info extracted from the label."
+}
+
+Rules:
+- Read the nutritional table carefully.
+- Use '1 serving' or whatever serving size is mentioned on the label as the quantity.
+- Try your best to get calories, protein, carbs, fat, and fiber per serving.
+- If the image does not contain any nutritional information, return { "error": "not_food" }`;
+
+async function callGemini(model, base64Image, mimeType, apiKey, customPrompt = PROMPT) {
   const url = `${API_BASE}/${model}:generateContent?key=${apiKey}`;
 
   const body = {
     contents: [
       {
         parts: [
-          { text: PROMPT },
+          { text: customPrompt },
           {
             inlineData: {
               mimeType: mimeType || "image/jpeg",
@@ -72,7 +92,8 @@ export async function logMealFromImage(base64Image, mimeType, apiKey) {
       PRIMARY_VISION_MODEL,
       base64Image,
       mimeType,
-      apiKey
+      apiKey,
+      PROMPT
     );
   } catch (primaryError) {
     console.warn("Primary model failed, switching to secondary:", primaryError);
@@ -83,7 +104,8 @@ export async function logMealFromImage(base64Image, mimeType, apiKey) {
         SECONDARY_VISION_MODEL,
         base64Image,
         mimeType,
-        apiKey
+        apiKey,
+        PROMPT
       );
     } catch (secondaryError) {
       console.error("Secondary model also failed:", secondaryError);
@@ -92,6 +114,38 @@ export async function logMealFromImage(base64Image, mimeType, apiKey) {
         throw new Error("Request timed out. Check your connection and try again.");
       }
 
+      throw new Error("Both AI models failed. Please try again later.");
+    }
+  }
+}
+
+export async function scanLabelFromImage(base64Image, mimeType, apiKey) {
+  if (!apiKey) throw new Error("no_api_key");
+  if (!base64Image) throw new Error("no_image");
+
+  try {
+    return await callGemini(
+      PRIMARY_VISION_MODEL,
+      base64Image,
+      mimeType,
+      apiKey,
+      LABEL_PROMPT
+    );
+  } catch (primaryError) {
+    console.warn("Primary model failed, switching to secondary:", primaryError);
+
+    try {
+      return await callGemini(
+        SECONDARY_VISION_MODEL,
+        base64Image,
+        mimeType,
+        apiKey,
+        LABEL_PROMPT
+      );
+    } catch (secondaryError) {
+      if (secondaryError.name === "AbortError") {
+        throw new Error("Request timed out. Check your connection and try again.");
+      }
       throw new Error("Both AI models failed. Please try again later.");
     }
   }

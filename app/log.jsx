@@ -15,7 +15,7 @@ import FoodInput from "../components/log/FoodInput";
 import MealTypeSelector from "../components/log/MealTypeSelector";
 import NutritionResult from "../components/log/NutritionResult";
 import { logMeal } from "../constants/gemini";
-import { logMealFromImage } from "../constants/gemini-vision";
+import { logMealFromImage, scanLabelFromImage } from "../constants/gemini-vision";
 import { COLORS, SHADOW, rf, rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
@@ -130,6 +130,47 @@ export default function LogScreen() {
     }
   };
 
+  const handleLabelPress = async () => {
+    if (!profile.apiKey) {
+      setError("No API key found. Tap your profile icon to add your Gemini API key.");
+      return;
+    }
+
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (permissionResult.granted === false) {
+      setError("Camera access is required to scan labels.");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false, // Don't force crop for labels
+      quality: 0.5,
+      base64: true,
+    });
+
+    if (!result.canceled && result.assets[0].base64) {
+      setLoading(true);
+      setError(null);
+      setResult(null);
+      setAdded(false);
+      
+      try {
+        const mimeType = result.assets[0].mimeType || "image/jpeg";
+        const data = await scanLabelFromImage(result.assets[0].base64, mimeType, profile.apiKey);
+        
+        if (data.error) setError("Could not read nutritional info from this image.");
+        else {
+          setResult(data);
+          setInput("Scanned from label");
+        }
+      } catch (e) {
+        setError(`Error: ${e.message}`);
+      }
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={s.root}>
       <ScrollView
@@ -183,13 +224,23 @@ export default function LogScreen() {
       </ScrollView>
 
       {(!input.trim() && !loading && !result) && (
-        <TouchableOpacity 
-          style={[s.fab, { bottom: insets.bottom + rs(30) }]} 
-          onPress={handleCameraPress} 
-          activeOpacity={0.8}
-        >
-          <Ionicons name="camera" size={rf(26)} color="#fff" />
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity 
+            style={[s.miniFab, { bottom: insets.bottom + rs(105) }]} 
+            onPress={handleLabelPress} 
+            activeOpacity={0.8}
+          >
+            <Ionicons name="document-text" size={rf(20)} color="#fff" />
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[s.fab, { bottom: insets.bottom + rs(30) }]} 
+            onPress={handleCameraPress} 
+            activeOpacity={0.8}
+          >
+            <Ionicons name="camera" size={rf(26)} color="#fff" />
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
@@ -248,6 +299,18 @@ const s = StyleSheet.create({
     height: rs(60),
     borderRadius: rs(30),
     backgroundColor: "#2D3B2D",
+    justifyContent: "center",
+    alignItems: "center",
+    ...SHADOW.md,
+    zIndex: 10,
+  },
+  miniFab: {
+    position: "absolute",
+    right: rs(28),
+    width: rs(44),
+    height: rs(44),
+    borderRadius: rs(22),
+    backgroundColor: "#425642", // slightly lighter green to differentiate
     justifyContent: "center",
     alignItems: "center",
     ...SHADOW.md,
