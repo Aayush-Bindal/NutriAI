@@ -23,18 +23,19 @@ Built with a focus on **Indian cuisine** — understands roti, dal, idli, dosa, 
 
 ## Features
 
-- **AI Meal Logging** — Type what you ate in natural language. Gemini AI returns calories, protein, carbs, fat, fiber, and a friendly nutrition tip.
+- **AI Meal Logging** — Type what you ate in natural language, take a photo of your plate, or scan a food packaging label. Gemini AI automatically analyzes the nutrition and returns calories, protein, carbs, fat, fiber, and a friendly nutrition tip. You can even add text notes alongside photos for precise tracking.
+- **Dark Mode & Themes** — Choose between light, dark, and system default themes for a comfortable viewing experience anywhere.
 - **Food Suggestions** — Quick-tap suggestion chips with common Indian meals to pre-fill the log input.
 - **Personalized Goals** — Calorie and macro targets calculated from your age, gender, weight, height, fitness goal, and activity level using the Mifflin-St Jeor equation.
 - **Dashboard** — Animated calorie ring, macro progress bars (carbs, protein, fat, fiber), date navigation, and meal history at a glance.
-- **Meal Deletion** — Remove individual food items with a confirmation modal to prevent accidental deletions.
+- **Meal Management** — Log meals automatically sorted by current time. Remove individual food items with a confirmation modal, and securely back up saved meals.
 - **Weight Tracking** — Log weight entries over time, view progress on an SVG graph, track BMI with color-coded categories. Delete individual entries from history.
 - **Height Unit Toggle** — Switch between cm and ft/in in the profile form; values are auto-converted.
-- **In-App Update Checker** — Check for new releases from GitHub directly in Settings. Shows Markdown-rendered release notes and a direct download link.
+- **In-App Update Checker** — Check for new releases from GitHub directly in Settings. Shows Markdown-rendered release notes and a direct download link, including automatic checks on app launch.
 - **Fallback AI Model** — If the primary Gemini model is unavailable, the app automatically retries with a fallback model.
 - **Backup & Restore** — Export all your data as a JSON file and restore it on any device. API key is never included in backups.
 - **Secure by Default** — Your Gemini API key is stored in the device's secure enclave via `expo-secure-store`. All data stays on your device.
-- **Haptic Feedback** — Tactile responses on interactions throughout the app.
+- **Haptic Feedback** — Tactile responses on interactions throughout the app, with an option to toggle it off in settings.
 
 ## Why NutriAI?
 
@@ -77,9 +78,9 @@ The goal is to make calorie tracking frictionless: type your meal, get instant a
 nutriai/
 ├── app/                          # Screens (file-based routing)
 │   ├── _layout.jsx               # Root layout, providers, onboarding gate
-│   ├── index.jsx                 # Dashboard
-│   ├── log.jsx                   # Log meal (modal)
-│   └── profile.jsx               # Settings, weight, backup (modal)
+│   ├── index.jsx                 # Dashboard screen
+│   ├── log.jsx                   # Log meal screen
+│   └── profile.jsx               # Settings, weight, and backup screen
 │
 ├── components/
 │   ├── Onboarding.jsx            # 6-step onboarding orchestrator
@@ -87,52 +88,75 @@ nutriai/
 │   ├── dashboard/                # Dashboard screen components
 │   │   ├── AiTip.jsx             # AI tip pill badge
 │   │   ├── CalorieHeroCard.jsx   # Calorie display card
-│   │   ├── CalorieRing.jsx       # Animated SVG progress ring
-│   │   ├── DashboardHeader.jsx   # Greeting + profile avatar nav button
-│   │   ├── DateStrip.jsx         # Scrollable 7-day strip + calendar picker
-│   │   ├── LogMealButton.jsx     # Floating action button
-│   │   ├── MacrosRow.jsx         # 2×2 macro nutrient grid with progress bars
-│   │   ├── MealSection.jsx       # Per-meal-type card + delete confirmation modal
-│   │   └── MealsList.jsx         # Renders all MealSection cards for the day
+│   │   ├── CalorieRing.jsx       # Animated progress ring
+│   │   ├── DashboardHeader.jsx   # Greeting and profile avatar
+│   │   ├── DateStrip.jsx         # Scrollable date selector
+│   │   ├── LogMealButton.jsx     # Action button for logging meals
+│   │   ├── MacrosRow.jsx         # Macro nutrient grid
+│   │   ├── MealSection.jsx       # Meal category card
+│   │   └── MealsList.jsx         # Renders all daily meals
 │   │
-│   ├── log/                      # Log meal modal components
-│   │   ├── FoodInput.jsx         # Text input + suggestion chips + analyse button
-│   │   ├── MealTypeSelector.jsx  # Breakfast/Lunch/Dinner/Snack chip selector
-│   │   └── NutritionResult.jsx   # Result card with macros, tip, and add button
+│   ├── log/                      # Log meal components
+│   │   ├── FoodInput.jsx         # Text input for describing food
+│   │   ├── MealTypeSelector.jsx  # Meal category selector
+│   │   └── NutritionResult.jsx   # AI analysis result card
 │   │
 │   ├── onboarding/               # Onboarding step components
-│   │   ├── WelcomeStep.jsx       # Intro screen with feature list + restore option
-│   │   ├── BasicInfoStep.jsx     # Name, age, gender
-│   │   ├── BodyMetricsStep.jsx   # Weight + height (cm or ft/in)
-│   │   ├── GoalStep.jsx          # Lose / maintain / gain
-│   │   ├── ActivityStep.jsx      # Activity level selector
+│   │   ├── WelcomeStep.jsx       # Intro screen
+│   │   ├── BasicInfoStep.jsx     # Name, age, gender input
+│   │   ├── BodyMetricsStep.jsx   # Weight and height input
+│   │   ├── GoalStep.jsx          # Fitness goal selection
+│   │   ├── ActivityStep.jsx      # Activity level selection
 │   │   ├── ApiKeyStep.jsx        # Gemini API key entry
+│   │   ├── ThemeStep.jsx         # Theme selection
 │   │   ├── Chip.jsx              # Reusable selectable chip
 │   │   ├── LabelInput.jsx        # Labelled text input field
-│   │   ├── StepDots.jsx          # Step indicator dots
+│   │   ├── StepDots.jsx          # Step indicator
 │   │   └── stepStyles.js         # Shared onboarding styles
 │   │
-│   └── profile/                  # Profile / Settings modal components
-│       ├── ProfileForm.jsx        # Editable profile fields
-│       ├── UpdateModal.jsx        # In-app update available / up-to-date modal
-│       ├── WeightGraph.jsx        # SVG line graph of weight history
-│       └── WeightSection.jsx      # Weight display, BMI badge, log input, graph
+│   └── profile/                  # Profile & Settings components
+│       ├── ProfileForm.jsx       # Editable profile fields
+│       ├── UpdateModal.jsx       # In-app update modal
+│       ├── WeightGraph.jsx       # SVG line graph
+│       └── WeightSection.jsx     # Weight display and log input
 │
 ├── context/                      # State management
-│   ├── ProfileContext.jsx         # Profile, goals, weight history, backup/restore
-│   └── MealContext.jsx            # Per-date meal data, totals, tips
+│   ├── ProfileContext.jsx        # Profile, goals, and weight history state
+│   ├── MealContext.jsx           # Meal data and totals state
+│   └── ThemeContext.jsx          # Theme state management
 │
 ├── constants/                    # App-wide constants
-│   ├── theme.js                  # Colors, responsive scaling (rs/rf), shadows
-│   └── gemini.js                 # Gemini API integration (primary + fallback models)
+│   ├── theme.js                  # Colors, scaling, and shadows
+│   └── gemini.js                 # Gemini API integration logic
 │
-├── assets/images/                # App icons (bundled into APK)
-└── docs/                         # README media (screenshots, videos — not bundled)
+├── assets/images/                # App icons
+└── docs/                         # README media
+```
+
+### Flow Diagram
+
+```mermaid
+flowchart TD
+    %% User Input Stage
+    Input[User Input<br>Text, Photo, or Label] --> App[NutriAI App]
+    
+    %% Processing Stage
+    App -->|Sends Prompt / Image| Gemini{Google Gemini API}
+    Gemini -- "Success" --> Parse[Parse Nutrition Data<br>Calories, Macros, Tip]
+    Gemini -- "Failure" --> Fallback{Fallback AI Model}
+    Fallback --> Parse
+    
+    %% Result & Storage Stage
+    Parse --> UI[Display Nutrition Result UI]
+    UI -->|User confirms & saves| Storage[(Local Storage<br>AsyncStorage)]
+    
+    %% Dashboard Update
+    Storage --> Dash[Update Dashboard<br>Calorie Ring & Macro Bars]
 ```
 
 ## Download
 
-Grab the latest APK from [GitHub Releases](../../releases/latest) and install it directly on your Android device — no build tools needed.
+Grab the latest APK from [GitHub Releases](../../releases/latest) and install it directly on your Android device — no build tools needed. iOS users can try the app via [Expo Go](https://expo.dev/go).
 
 1. Go to the [Releases](../../releases) page
 2. Download the `.apk` file from the latest release
