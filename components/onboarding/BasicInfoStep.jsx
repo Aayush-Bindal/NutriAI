@@ -1,12 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
-import LabelInput, { labelInputStyles as li } from "./LabelInput";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import LabelInput, { useLabelInputStyles } from "./LabelInput";
 import StepDots from "./StepDots";
-import st from "./stepStyles";
+import { useStepStyles } from "./stepStyles";
 
 function GenderOption({ label, iconName, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -41,6 +44,9 @@ function GenderOption({ label, iconName, selected, onPress }) {
 }
 
 export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
+  const { colors: COLORS } = useTheme();
+  const st = useStepStyles();
+  const li = useLabelInputStyles();
   const canNext = data.name.trim() && data.age && data.gender;
   return (
     <View style={st.container}>
@@ -48,7 +54,7 @@ export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
         <TouchableOpacity onPress={onBack} style={st.backBtn}>
           <Ionicons name="arrow-back" size={rf(22)} color={COLORS.dark} />
         </TouchableOpacity>
-        <StepDots current={1} />
+        <StepDots current={2} />
         <Text style={st.title}>Tell us about you</Text>
         <Text style={st.desc}>
           We&apos;ll use this to calculate your daily nutrition targets.
@@ -111,7 +117,7 @@ export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   genderOption: {
     flex: 1,
     flexDirection: "row",

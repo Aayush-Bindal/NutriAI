@@ -19,14 +19,24 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ProfileForm, { GOALS } from "../components/profile/ProfileForm";
 import UpdateModal from "../components/profile/UpdateModal";
 import WeightSection from "../components/profile/WeightSection";
-import { COLORS, rf, rs, SHADOW } from "../constants/theme";
+import { rf, rs } from "../constants/theme";
 import { useProfile } from "../context/ProfileContext";
+import { useTheme, useThemedStyles } from "../context/ThemeContext";
 import { checkForAppUpdate } from "../utils/appUpdate";
+
+const THEME_OPTIONS = [
+  { key: "system", label: "System", icon: "phone-portrait-outline" },
+  { key: "light", label: "Light", icon: "sunny-outline" },
+  { key: "dark", label: "Dark", icon: "moon-outline" },
+];
 
 // ═════════════════════════════════════════════════════════
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { colors: COLORS, mode, resolvedMode, setMode } = useTheme();
+  const s = useThemedStyles(createStyles);
+  const isDark = resolvedMode === "dark";
   const {
     profile,
     updateProfile,
@@ -248,8 +258,13 @@ export default function ProfileScreen() {
             onPress={toggleProfile}
           >
             <View style={s.profileCardHeader}>
-              <View style={s.topCardAvatar}>
-                <Text style={s.topCardAvatarText}>
+              <View style={[s.topCardAvatar, isDark && s.topCardAvatarDark]}>
+                <Text
+                  style={[
+                    s.topCardAvatarText,
+                    isDark && s.topCardAvatarTextDark,
+                  ]}
+                >
                   {form.name ? form.name[0].toUpperCase() : "?"}
                 </Text>
               </View>
@@ -322,6 +337,44 @@ export default function ProfileScreen() {
         </View>
 
         {/* ══════════ PROFILE EXPANDED ══════════ */}
+        <View style={s.card}>
+          <View style={s.secHeader}>
+            <Ionicons
+              name="color-palette-outline"
+              size={rf(18)}
+              color={COLORS.green}
+            />
+            <Text style={s.secTitle}>Appearance</Text>
+          </View>
+          <View style={s.themeRow}>
+            {THEME_OPTIONS.map((item) => {
+              const selected = mode === item.key;
+              return (
+                <TouchableOpacity
+                  key={item.key}
+                  activeOpacity={0.75}
+                  accessibilityRole="button"
+                  accessibilityState={{ selected }}
+                  style={[s.themeOption, selected && s.themeOptionOn]}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setMode(item.key);
+                  }}
+                >
+                  <Ionicons
+                    name={item.icon}
+                    size={rf(17)}
+                    color={selected ? COLORS.white : COLORS.green}
+                  />
+                  <Text style={[s.themeTxt, selected && s.themeTxtOn]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
         {profileExpanded && (
           <ProfileForm
             form={form}
@@ -428,7 +481,7 @@ export default function ProfileScreen() {
 }
 
 // ─── Styles ──────────────────────────────────────────────
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   scroll: { flex: 1 },
   content: { paddingHorizontal: rs(20) },
@@ -495,10 +548,18 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  topCardAvatarDark: {
+    backgroundColor: COLORS.cardAlt,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
   topCardAvatarText: {
     fontSize: rf(18),
     fontWeight: "900",
     color: COLORS.white,
+  },
+  topCardAvatarTextDark: {
+    color: COLORS.mid,
   },
   profileCardChevron: {
     width: rs(26),
@@ -585,6 +646,35 @@ const s = StyleSheet.create({
   },
 
   // ─ Cards ─
+  themeRow: {
+    flexDirection: "row",
+    gap: rs(8),
+  },
+  themeOption: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: rs(6),
+    backgroundColor: COLORS.cardAlt,
+    borderRadius: rs(12),
+    paddingVertical: rs(11),
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  themeOptionOn: {
+    backgroundColor: COLORS.greenMutedDark,
+    borderColor: COLORS.greenMutedDark,
+  },
+  themeTxt: {
+    fontSize: rf(12),
+    fontWeight: "800",
+    color: COLORS.green,
+  },
+  themeTxtOn: {
+    color: COLORS.white,
+  },
+
   card: {
     backgroundColor: COLORS.card,
     borderRadius: rs(20),

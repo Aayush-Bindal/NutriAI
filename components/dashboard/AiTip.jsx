@@ -1,8 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function AiTip({ tip }) {
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   if (!tip) return null;
 
   return (
@@ -16,7 +19,7 @@ export default function AiTip({ tip }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   tip: {
     backgroundColor: COLORS.card,
     borderRadius: rs(24),

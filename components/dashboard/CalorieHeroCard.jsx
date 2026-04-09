@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 import CalorieRing from "./CalorieRing";
 
 export default function CalorieHeroCard({
@@ -8,6 +9,8 @@ export default function CalorieHeroCard({
   isToday,
   selectedDay,
 }) {
+  const { shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const caloriesOver = totals.calories > goal ? totals.calories - goal : 0;
 
   return (
@@ -48,7 +51,7 @@ export default function CalorieHeroCard({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   hero: {
     backgroundColor: COLORS.card,
     borderRadius: rs(28),

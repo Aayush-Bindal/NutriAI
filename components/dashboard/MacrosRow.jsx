@@ -1,7 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function MacrosRow({ totals, macroGoals }) {
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const goals = macroGoals || { protein: 150, carbs: 225, fat: 56, fiber: 25 };
   const macros = [
     {
@@ -64,7 +67,7 @@ export default function MacrosRow({ totals, macroGoals }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   macroGrid: {
     flexDirection: "row",
     flexWrap: "wrap",

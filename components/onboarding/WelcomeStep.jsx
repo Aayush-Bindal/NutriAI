@@ -1,9 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function WelcomeStep({ onNext, onRestore }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <View style={s.container}>
       <View style={s.top}>
@@ -81,7 +84,7 @@ export default function WelcomeStep({ onNext, onRestore }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",

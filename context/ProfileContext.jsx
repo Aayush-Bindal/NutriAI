@@ -8,6 +8,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 const STORAGE_KEY = "nutriai_profile";
 const SECURE_API_KEY = "nutriai_api_key";
 const WEIGHT_HISTORY_KEY = "nutriai_weight_history";
+const SAVED_MEALS_KEY = "saved_meals";
 
 const ProfileContext = createContext(null);
 const ONBOARDING_KEY = "nutriai_onboarding_done";
@@ -26,6 +27,21 @@ const DEFAULT_PROFILE = {
 };
 
 const PROTEIN_PER_KG = { lose: 1.8, maintain: 1.6, gain: 2.0 };
+
+function parseSavedMeals(raw) {
+  if (!raw) return [];
+
+  try {
+    const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+    return Array.isArray(parsed)
+      ? parsed.filter(
+          (meal) => meal && typeof meal === "object" && meal.label && meal.data,
+        )
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 function calcGoals(profile) {
   const { age, gender, weight, height, goal, activity } = profile;
@@ -218,6 +234,9 @@ export function ProfileProvider({ children }) {
         backup[STORAGE_KEY] = JSON.stringify(profileData);
       }
 
+      const savedMeals = parseSavedMeals(backup[SAVED_MEALS_KEY]);
+      backup[SAVED_MEALS_KEY] = JSON.stringify(savedMeals);
+
       const payload = JSON.stringify({ version: 1, date: new Date().toISOString(), data: backup }, null, 2);
       const filePath = `${FileSystem.cacheDirectory}nutriai-backup.json`;
       await FileSystem.writeAsStringAsync(filePath, payload);
@@ -242,6 +261,12 @@ export function ProfileProvider({ children }) {
         return { success: false, error: "Invalid backup file" };
       }
 
+      const savedMealsRaw = parsed.data[SAVED_MEALS_KEY];
+      if (savedMealsRaw) {
+        parsed.data[SAVED_MEALS_KEY] = JSON.stringify(
+          parseSavedMeals(savedMealsRaw),
+        );
+      }
       const pairs = Object.entries(parsed.data).filter(
         ([k]) => k !== "nutriai_backup"
       );

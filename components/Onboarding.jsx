@@ -9,13 +9,15 @@ import {
   StyleSheet,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { COLORS, rs, W } from "../constants/theme";
+import { rs, W } from "../constants/theme";
 import { useProfile } from "../context/ProfileContext";
+import { useThemedStyles } from "../context/ThemeContext";
 import ActivityStep from "./onboarding/ActivityStep";
 import ApiKeyStep from "./onboarding/ApiKeyStep";
 import BasicInfoStep from "./onboarding/BasicInfoStep";
 import BodyMetricsStep from "./onboarding/BodyMetricsStep";
 import GoalStep from "./onboarding/GoalStep";
+import ThemeStep from "./onboarding/ThemeStep";
 import WelcomeStep from "./onboarding/WelcomeStep";
 
 // ═══════════════════════════════════════════════════════════
@@ -23,6 +25,7 @@ import WelcomeStep from "./onboarding/WelcomeStep";
 // ═══════════════════════════════════════════════════════════
 export default function Onboarding() {
   const insets = useSafeAreaInsets();
+  const o = useThemedStyles(createStyles);
   const {
     updateProfile,
     completeOnboarding,
@@ -90,16 +93,11 @@ export default function Onboarding() {
         );
       case 1:
         return (
-          <BasicInfoStep
-            data={draft}
-            onChange={updateDraft}
-            onNext={() => animateTo(2)}
-            onBack={() => animateTo(0)}
-          />
+          <ThemeStep onNext={() => animateTo(2)} onBack={() => animateTo(0)} />
         );
       case 2:
         return (
-          <BodyMetricsStep
+          <BasicInfoStep
             data={draft}
             onChange={updateDraft}
             onNext={() => animateTo(3)}
@@ -108,7 +106,7 @@ export default function Onboarding() {
         );
       case 3:
         return (
-          <GoalStep
+          <BodyMetricsStep
             data={draft}
             onChange={updateDraft}
             onNext={() => animateTo(4)}
@@ -117,7 +115,7 @@ export default function Onboarding() {
         );
       case 4:
         return (
-          <ActivityStep
+          <GoalStep
             data={draft}
             onChange={updateDraft}
             onNext={() => animateTo(5)}
@@ -126,11 +124,20 @@ export default function Onboarding() {
         );
       case 5:
         return (
+          <ActivityStep
+            data={draft}
+            onChange={updateDraft}
+            onNext={() => animateTo(6)}
+            onBack={() => animateTo(4)}
+          />
+        );
+      case 6:
+        return (
           <ApiKeyStep
             data={draft}
             onChange={updateDraft}
             onFinish={handleFinish}
-            onBack={() => animateTo(4)}
+            onBack={() => animateTo(5)}
           />
         );
       default:
@@ -166,7 +173,7 @@ export default function Onboarding() {
   );
 }
 
-const o = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: COLORS.bg,

@@ -1,9 +1,11 @@
 import { StyleSheet, View } from "react-native";
-import { COLORS, rs } from "../../constants/theme";
+import { rs } from "../../constants/theme";
+import { useThemedStyles } from "../../context/ThemeContext";
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 7;
 
 export default function StepDots({ current, total = TOTAL_STEPS }) {
+  const s = useThemedStyles(createStyles);
   return (
     <View style={s.row}>
       {Array.from({ length: total }).map((_, i) => (
@@ -20,7 +22,7 @@ export default function StepDots({ current, total = TOTAL_STEPS }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "center",

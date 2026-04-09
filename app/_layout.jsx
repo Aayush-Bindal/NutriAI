@@ -5,9 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import Onboarding from "../components/Onboarding";
 import UpdateModal from "../components/profile/UpdateModal";
-import { COLORS } from "../constants/theme";
 import { MealProvider } from "../context/MealContext";
 import { ProfileProvider, useProfile } from "../context/ProfileContext";
+import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import {
   checkForAppUpdate,
   getSkippedUpdateVersion,
@@ -16,6 +16,7 @@ import {
 
 function AppContent() {
   const { onboardingDone } = useProfile();
+  const { colors: COLORS, statusBarStyle } = useTheme();
   const [updateModal, setUpdateModal] = useState(null);
   const hasCheckedForUpdates = useRef(false);
   const appVersion = Constants.expoConfig?.version || "1.0.0";
@@ -51,7 +52,7 @@ function AppContent() {
   if (!onboardingDone) {
     return (
       <View style={{ flex: 1, backgroundColor: COLORS.bg }}>
-        <StatusBar style="dark" />
+        <StatusBar style={statusBarStyle} />
         <Onboarding />
       </View>
     );
@@ -60,7 +61,7 @@ function AppContent() {
   return (
     <>
       <MealProvider>
-        <StatusBar style="dark" />
+        <StatusBar style={statusBarStyle} />
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
@@ -98,8 +99,10 @@ function AppContent() {
 
 export default function RootLayout() {
   return (
-    <ProfileProvider>
-      <AppContent />
-    </ProfileProvider>
+    <ThemeProvider>
+      <ProfileProvider>
+        <AppContent />
+      </ProfileProvider>
+    </ThemeProvider>
   );
 }

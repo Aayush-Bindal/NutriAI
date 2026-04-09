@@ -1,11 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 import StepDots from "./StepDots";
-import st from "./stepStyles";
+import { useStepStyles } from "./stepStyles";
 
 function GoalOption({ label, iconName, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -40,6 +43,8 @@ function GoalOption({ label, iconName, selected, onPress }) {
 }
 
 export default function GoalStep({ data, onChange, onNext, onBack }) {
+  const { colors: COLORS } = useTheme();
+  const st = useStepStyles();
   const canNext = !!data.goal;
   return (
     <View style={st.container}>
@@ -47,7 +52,7 @@ export default function GoalStep({ data, onChange, onNext, onBack }) {
         <TouchableOpacity onPress={onBack} style={st.backBtn}>
           <Ionicons name="arrow-back" size={rf(22)} color={COLORS.dark} />
         </TouchableOpacity>
-        <StepDots current={3} />
+        <StepDots current={4} />
         <Text style={st.title}>Your fitness goal</Text>
         <Text style={st.desc}>What&apos;s your primary goal right now?</Text>
 
@@ -95,7 +100,7 @@ export default function GoalStep({ data, onChange, onNext, onBack }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   goalOption: {
     flexDirection: "row",
     alignItems: "center",

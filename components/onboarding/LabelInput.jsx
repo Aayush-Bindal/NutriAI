@@ -1,5 +1,6 @@
 import { StyleSheet, Text, TextInput, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function LabelInput({
   label,
@@ -9,6 +10,8 @@ export default function LabelInput({
   unit,
   placeholder,
 }) {
+  const { colors: COLORS } = useTheme();
+  const s = useLabelInputStyles();
   return (
     <View style={s.wrap}>
       <Text style={s.label}>{label}</Text>
@@ -28,7 +31,7 @@ export default function LabelInput({
   );
 }
 
-export const labelInputStyles = StyleSheet.create({
+const createLabelInputStyles = (COLORS, SHADOW) => StyleSheet.create({
   wrap: { marginBottom: rs(18) },
   label: {
     fontSize: rf(13),
@@ -64,4 +67,6 @@ export const labelInputStyles = StyleSheet.create({
   },
 });
 
-const s = labelInputStyles;
+export function useLabelInputStyles() {
+  return useThemedStyles(createLabelInputStyles);
+}

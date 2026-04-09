@@ -1,5 +1,5 @@
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Keyboard,
   ScrollView,
@@ -15,9 +15,10 @@ import FoodInput from "../components/log/FoodInput";
 import MealTypeSelector from "../components/log/MealTypeSelector";
 import NutritionResult from "../components/log/NutritionResult";
 import { logMeal, logMealFromImage, scanLabelFromImage } from "../constants/gemini";
-import { COLORS, SHADOW, rf, rs } from "../constants/theme";
+import { rf, rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
+import { useTheme, useThemedStyles } from "../context/ThemeContext";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
@@ -28,7 +29,15 @@ function getDefaultMeal() {
 
 export default function LogScreen() {
   const router = useRouter();
-  const { addMeal, savedMeals, saveMealWithData, removeSavedMeal } = useMeals();
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
+  const {
+    addMeal,
+    savedMeals,
+    refreshSavedMeals,
+    saveMealWithData,
+    removeSavedMeal,
+  } = useMeals();
   const { profile } = useProfile();
   const insets = useSafeAreaInsets();
 
@@ -38,6 +47,12 @@ export default function LogScreen() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [added, setAdded] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshSavedMeals();
+    }, [refreshSavedMeals]),
+  );
 
   const analyse = async () => {
     if (!input.trim() || loading) return;
@@ -254,7 +269,7 @@ export default function LogScreen() {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   scroll: { flex: 1 },
   content: { paddingHorizontal: rs(20), paddingTop: rs(26) },

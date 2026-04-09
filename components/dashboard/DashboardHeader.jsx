@@ -1,6 +1,8 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -12,6 +14,9 @@ function getGreeting() {
 
 export default function DashboardHeader({ name }) {
   const router = useRouter();
+  const { colors: COLORS, resolvedMode } = useTheme();
+  const s = useThemedStyles(createStyles);
+  const isDark = resolvedMode === "dark";
 
   return (
     <View style={s.header}>
@@ -22,17 +27,25 @@ export default function DashboardHeader({ name }) {
         </Text>
       </View>
       <TouchableOpacity
-        style={s.avatar}
+        style={[s.avatar, isDark && s.avatarDark]}
         onPress={() => router.push("/profile")}
         activeOpacity={0.8}
       >
-        <Text style={s.avatarTxt}>{name ? name[0].toUpperCase() : "👤"}</Text>
+        {name ? (
+          <Text style={s.avatarTxt}>{name[0].toUpperCase()}</Text>
+        ) : (
+          <Ionicons
+            name="person-outline"
+            size={rf(22)}
+            color={isDark ? COLORS.mid : COLORS.white}
+          />
+        )}
       </TouchableOpacity>
     </View>
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -60,6 +73,9 @@ const s = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     ...SHADOW.md,
+  },
+  avatarDark: {
+    backgroundColor: COLORS.cardAlt,
   },
   avatarTxt: { color: COLORS.white, fontSize: rf(18), fontWeight: "700" },
 });

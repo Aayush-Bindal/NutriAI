@@ -8,7 +8,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -33,6 +34,8 @@ export default function DateStrip({
   onCalendarPress,
 }) {
   const dateStripRef = useRef(null);
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
 
   useEffect(() => {
     setTimeout(() => {
@@ -92,7 +95,7 @@ export default function DateStrip({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   stripContainer: { marginBottom: rs(24) },
   strip: { gap: rs(10), paddingRight: rs(20) },
   dayChip: {

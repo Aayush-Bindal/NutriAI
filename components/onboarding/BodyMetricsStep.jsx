@@ -9,12 +9,17 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { COLORS, rf, rs } from "../../constants/theme";
-import LabelInput, { labelInputStyles as li } from "./LabelInput";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import LabelInput, { useLabelInputStyles } from "./LabelInput";
 import StepDots from "./StepDots";
-import st from "./stepStyles";
+import { useStepStyles } from "./stepStyles";
 
 export default function BodyMetricsStep({ data, onChange, onNext, onBack }) {
+  const { colors: COLORS } = useTheme();
+  const st = useStepStyles();
+  const li = useLabelInputStyles();
+  const hu = useThemedStyles(createStyles);
   const [heightUnit, setHeightUnit] = useState("cm");
   const [feet, setFeet] = useState("");
   const [inches, setInches] = useState("");
@@ -63,7 +68,7 @@ export default function BodyMetricsStep({ data, onChange, onNext, onBack }) {
         <TouchableOpacity onPress={onBack} style={st.backBtn}>
           <Ionicons name="arrow-back" size={rf(22)} color={COLORS.dark} />
         </TouchableOpacity>
-        <StepDots current={2} />
+        <StepDots current={3} />
         <Text style={st.title}>Your body metrics</Text>
         <Text style={st.desc}>
           This helps us calculate accurate calorie and macro goals for you.
@@ -191,7 +196,7 @@ export default function BodyMetricsStep({ data, onChange, onNext, onBack }) {
   );
 }
 
-const hu = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   labelRow: {
     flexDirection: "row",
     alignItems: "center",

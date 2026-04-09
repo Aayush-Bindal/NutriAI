@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 // ─── Data ────────────────────────────────────────────────
 export const GOALS = [
@@ -45,6 +46,8 @@ export const ACTIVITY = [
 
 // ─── Small chip selector ─────────────────────────────────
 function SelectChip({ label, iconName, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -72,6 +75,8 @@ function SelectChip({ label, iconName, selected, onPress }) {
 
 // ─── Option card (activity) ──────────────────────────────
 function OptionCard({ label, desc, iconName, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -112,12 +117,15 @@ export default function ProfileForm({
   handleHtFeetChange,
   handleHtInchesChange,
 }) {
+  const { colors: COLORS, resolvedMode } = useTheme();
+  const s = useThemedStyles(createStyles);
+  const isDark = resolvedMode === "dark";
   return (
     <View style={s.card}>
       {/* Name */}
       <View style={s.avatarRow}>
-        <View style={s.avatar}>
-          <Text style={s.avatarText}>
+        <View style={[s.avatar, isDark && s.avatarDark]}>
+          <Text style={[s.avatarText, isDark && s.avatarTextDark]}>
             {form.name ? form.name[0].toUpperCase() : "?"}
           </Text>
         </View>
@@ -271,7 +279,7 @@ export default function ProfileForm({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   card: {
     backgroundColor: COLORS.card,
     borderRadius: rs(20),
@@ -293,10 +301,18 @@ const s = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  avatarDark: {
+    backgroundColor: COLORS.cardAlt,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
   avatarText: {
     fontSize: rf(22),
     fontWeight: "900",
     color: COLORS.white,
+  },
+  avatarTextDark: {
+    color: COLORS.mid,
   },
   inlineInput: {
     fontSize: rf(18),

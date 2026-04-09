@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function NutritionResult({
   result,
@@ -11,6 +12,8 @@ export default function NutritionResult({
   onSaveMeal,
   isMealSaved,
 }) {
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const [saved, setSaved] = useState(false);
 
   const handleSave = () => {
@@ -96,7 +99,7 @@ export default function NutritionResult({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   resultCard: {
     backgroundColor: COLORS.card,
     borderRadius: rs(24),

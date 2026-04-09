@@ -2,10 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function LogMealButton({ bottomInset }) {
   const router = useRouter();
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
 
   return (
     <TouchableOpacity
@@ -24,7 +27,7 @@ export default function LogMealButton({ bottomInset }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   fab: {
     position: "absolute",
     right: rs(20),

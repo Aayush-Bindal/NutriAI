@@ -1,11 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
 import { useMeals } from "../../context/MealContext";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function MealSection({ title, items = [] }) {
   const { removeItem } = useMeals();
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   if (!items.length) return null;
@@ -76,7 +79,7 @@ export default function MealSection({ title, items = [] }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   card: {
     backgroundColor: COLORS.card,
     borderRadius: rs(22),

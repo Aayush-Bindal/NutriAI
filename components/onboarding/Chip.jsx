@@ -1,9 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 export default function Chip({ label, icon, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -31,7 +34,7 @@ export default function Chip({ label, icon, selected, onPress }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   chip: {
     flexDirection: "row",
     alignItems: "center",

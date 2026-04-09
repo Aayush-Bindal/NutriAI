@@ -1,19 +1,22 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme } from "../../context/ThemeContext";
 import LabelInput from "./LabelInput";
 import StepDots from "./StepDots";
-import st from "./stepStyles";
+import { useStepStyles } from "./stepStyles";
 
 export default function ApiKeyStep({ data, onChange, onFinish, onBack }) {
+  const { colors: COLORS } = useTheme();
+  const st = useStepStyles();
   return (
     <View style={st.container}>
       <View>
         <TouchableOpacity onPress={onBack} style={st.backBtn}>
           <Ionicons name="arrow-back" size={rf(22)} color={COLORS.dark} />
         </TouchableOpacity>
-        <StepDots current={5} />
+        <StepDots current={6} />
         <Text style={st.title}>Power up with AI</Text>
         <Text style={st.desc}>
           Add your Gemini API key to unlock AI-powered meal analysis. You can

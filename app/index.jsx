@@ -9,9 +9,10 @@ import DateStrip, { generateWeekDays } from "../components/dashboard/DateStrip";
 import LogMealButton from "../components/dashboard/LogMealButton";
 import MacrosRow from "../components/dashboard/MacrosRow";
 import MealsList from "../components/dashboard/MealsList";
-import { COLORS, rs } from "../constants/theme";
+import { rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
+import { useThemedStyles } from "../context/ThemeContext";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -25,6 +26,7 @@ function isSameDay(a, b) {
 
 export default function Dashboard() {
   const insets = useSafeAreaInsets();
+  const s = useThemedStyles(createStyles);
   const { meals, totals, tip, switchDate } = useMeals();
   const { profile } = useProfile();
 
@@ -119,7 +121,7 @@ export default function Dashboard() {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   root: { flex: 1, backgroundColor: COLORS.bg },
   scroll: { flex: 1 },
   content: { paddingHorizontal: rs(20) },

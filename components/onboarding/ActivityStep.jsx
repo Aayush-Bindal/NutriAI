@@ -1,11 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 import StepDots from "./StepDots";
-import st from "./stepStyles";
+import { useStepStyles } from "./stepStyles";
 
 function ActivityOption({ label, desc, iconName, selected, onPress }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -43,6 +46,8 @@ function ActivityOption({ label, desc, iconName, selected, onPress }) {
 }
 
 export default function ActivityStep({ data, onChange, onNext, onBack }) {
+  const { colors: COLORS } = useTheme();
+  const st = useStepStyles();
   const canNext = !!data.activity;
   return (
     <View style={st.container}>
@@ -50,7 +55,7 @@ export default function ActivityStep({ data, onChange, onNext, onBack }) {
         <TouchableOpacity onPress={onBack} style={st.backBtn}>
           <Ionicons name="arrow-back" size={rf(22)} color={COLORS.dark} />
         </TouchableOpacity>
-        <StepDots current={4} />
+        <StepDots current={5} />
         <Text style={st.title}>Activity level</Text>
         <Text style={st.desc}>How active are you on a typical week?</Text>
 
@@ -108,7 +113,7 @@ export default function ActivityStep({ data, onChange, onNext, onBack }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   activityOption: {
     flexDirection: "row",
     alignItems: "center",

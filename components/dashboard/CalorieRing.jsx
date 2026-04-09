@@ -6,12 +6,14 @@ import Animated, {
     withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle, Text as SvgText } from "react-native-svg";
-import { COLORS, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme } from "../../context/ThemeContext";
 
 // Create an animatable version of the SVG Circle
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 export default function CalorieRing({ eaten = 0, goal = 2000 }) {
+  const { colors: COLORS } = useTheme();
   const size = rs(160);
   const r = rs(58);
   const cx = size / 2;

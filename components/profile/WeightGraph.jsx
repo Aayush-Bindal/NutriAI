@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Svg, { Circle, Polyline } from "react-native-svg";
-import { COLORS, rf, rs, W } from "../../constants/theme";
+import { rf, rs, W } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 const formatDate = (iso) => {
   const d = new Date(iso);
@@ -29,6 +30,8 @@ const formatTime = (iso) => {
 };
 
 export default function WeightGraph({ data, onDelete }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   if (!data || data.length < 2) {
     return (
       <View style={s.graphEmpty}>
@@ -143,7 +146,7 @@ export default function WeightGraph({ data, onDelete }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   graphEmpty: {
     alignItems: "center",
     paddingVertical: rs(20),

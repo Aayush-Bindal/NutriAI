@@ -1,7 +1,8 @@
 import { StyleSheet } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useThemedStyles } from "../../context/ThemeContext";
 
-const stepStyles = StyleSheet.create({
+const createStepStyles = (COLORS, SHADOW) => StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
@@ -72,4 +73,6 @@ const stepStyles = StyleSheet.create({
   },
 });
 
-export default stepStyles;
+export function useStepStyles() {
+  return useThemedStyles(createStepStyles);
+}

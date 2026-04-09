@@ -9,7 +9,8 @@ import {
     View,
 } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 const PLACEHOLDERS = [
   "e.g., 2 rotis with dal makhani and lassi...",
@@ -28,6 +29,8 @@ export default function FoodInput({
   onSelectSavedMeal,
   showAnalyseBtn = true,
 }) {
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const translateY = useRef(new Animated.Value(0)).current;
   const opacity = useRef(new Animated.Value(1)).current;
@@ -137,7 +140,7 @@ export default function FoodInput({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   secLabel: {
     fontSize: rf(11),
     fontWeight: "800",

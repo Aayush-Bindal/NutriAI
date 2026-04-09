@@ -15,7 +15,7 @@ export const rf = (size) => {
 export const W = width;
 export const H = height;
 
-export const COLORS = {
+export const LIGHT_COLORS = {
   bg: "#E8EDE6", // sage green background
   card: "#FFFFFF",
   cardAlt: "#F0F4EE",
@@ -45,6 +45,38 @@ export const COLORS = {
   darkScrim: "rgba(26, 31, 27, 0.45)",
 };
 
+export const DARK_COLORS = {
+  bg: "#09110C",
+  card: "#141F18",
+  cardAlt: "#1B2A20",
+  green: "#7BC58D",
+  greenLight: "#1D2D22",
+  greenMid: "#8BD09B",
+  greenDark: "#2A5039",
+  greenMutedDark: "#436F52",
+  greenDeep: "#DDEBDD",
+  greenDisabled: "#33483A",
+  dark: "#F4F8F2",
+  mid: "#C3D0C4",
+  muted: "#849386",
+  white: "#FFFFFF",
+  red: "#D98378",
+  redLight: "#2B1B1B",
+  redDark: "#FCA5A5",
+  blue: "#8FAFD4",
+  blueLight: "#172432",
+  amber: "#D8BC75",
+  amberLight: "#2D2818",
+  purple: "#BDA5EE",
+  border: "#2A3A30",
+  shadow: "#050A06",
+  barTrack: "rgba(255,255,255,0.1)",
+  blackScrim: "rgba(0,0,0,0.62)",
+  darkScrim: "rgba(5, 10, 6, 0.68)",
+};
+
+export const COLORS = LIGHT_COLORS;
+
 export const FONTS = {
   black: { fontWeight: "900" },
   bold: { fontWeight: "700" },
@@ -53,26 +85,28 @@ export const FONTS = {
   regular: { fontWeight: "400" },
 };
 
-export const SHADOW = {
+export const makeShadow = (colors) => ({
   sm: {
-    shadowColor: COLORS.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
-    shadowColor: COLORS.shadow,
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 14,
     elevation: 6,
   },
   green: {
-    shadowColor: COLORS.green,
+    shadowColor: colors.green,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,
     elevation: 10,
   },
-};
+});
+
+export const SHADOW = makeShadow(LIGHT_COLORS);

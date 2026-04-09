@@ -1,6 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
 const MEAL_TYPES = [
   { label: "Breakfast", icon: "partly-sunny-outline" },
@@ -10,6 +11,8 @@ const MEAL_TYPES = [
 ];
 
 export default function MealTypeSelector({ mealType, setMealType }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   return (
     <>
       <Text style={s.secLabel}>Which meal?</Text>
@@ -40,7 +43,7 @@ export default function MealTypeSelector({ mealType, setMealType }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   secLabel: {
     fontSize: rf(11),
     fontWeight: "800",

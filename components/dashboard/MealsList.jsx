@@ -1,9 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
-import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 import MealSection from "./MealSection";
 
 export default function MealsList({ meals, isToday, selectedDay }) {
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const s = useThemedStyles(createStyles);
   const hasAnyMeal = Object.values(meals).some(
     (mealArray) => mealArray.length > 0,
   );
@@ -48,7 +51,7 @@ export default function MealsList({ meals, isToday, selectedDay }) {
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS) => StyleSheet.create({
   mealsHead: {
     flexDirection: "row",
     justifyContent: "space-between",

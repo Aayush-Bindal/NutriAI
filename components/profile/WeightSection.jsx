@@ -6,10 +6,11 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 import WeightGraph from "./WeightGraph";
 
-const getBmiCategory = (val) => {
+const getBmiCategory = (val, COLORS) => {
   if (val < 18.5) return { label: "Underweight", color: COLORS.blue };
   if (val < 25) return { label: "Normal", color: COLORS.green };
   if (val < 30) return { label: "Overweight", color: COLORS.amber };
@@ -25,7 +26,9 @@ export default function WeightSection({
   weightHistory,
   onDeleteWeight,
 }) {
-  const bmiInfo = bmi ? getBmiCategory(parseFloat(bmi)) : null;
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
+  const bmiInfo = bmi ? getBmiCategory(parseFloat(bmi), COLORS) : null;
 
   return (
     <>
@@ -105,7 +108,7 @@ export default function WeightSection({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   card: {
     backgroundColor: COLORS.card,
     borderRadius: rs(20),

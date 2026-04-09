@@ -9,9 +9,10 @@ import {
     View,
 } from "react-native";
 import Markdown from "react-native-markdown-display";
-import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
+import { rf, rs } from "../../constants/theme";
+import { useTheme, useThemedStyles } from "../../context/ThemeContext";
 
-const STATES = {
+const getStates = (COLORS) => ({
   available: {
     icon: "arrow-up-circle",
     iconBg: COLORS.greenLight,
@@ -30,9 +31,9 @@ const STATES = {
     iconColor: COLORS.red,
     title: "Connection Error",
   },
-};
+});
 
-const mdStyles = {
+const createMarkdownStyles = (COLORS) => ({
   body: { fontSize: rf(13), color: COLORS.mid, lineHeight: rf(20) },
   heading1: {
     fontSize: rf(16),
@@ -85,7 +86,7 @@ const mdStyles = {
   link: { color: COLORS.green, textDecorationLine: "underline" },
   paragraph: { marginTop: rs(2), marginBottom: rs(6) },
   hr: { backgroundColor: COLORS.border, height: 1, marginVertical: rs(8) },
-};
+});
 
 export default function UpdateModal({
   data,
@@ -94,8 +95,11 @@ export default function UpdateModal({
   showSkipAction = false,
   onSkipVersion,
 }) {
+  const { colors: COLORS } = useTheme();
+  const s = useThemedStyles(createStyles);
   if (!data) return null;
-  const cfg = STATES[data.status];
+  const cfg = getStates(COLORS)[data.status];
+  const mdStyles = createMarkdownStyles(COLORS);
 
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
@@ -202,7 +206,7 @@ export default function UpdateModal({
   );
 }
 
-const s = StyleSheet.create({
+const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: "center",
