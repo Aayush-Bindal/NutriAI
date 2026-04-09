@@ -1,5 +1,8 @@
-const PRIMARY_VISION_MODEL = "gemini-3.1-flash-lite-preview";
-const SECONDARY_VISION_MODEL = "gemini-2.5-flash";
+const MODELS = [
+  "gemini-3.1-flash-lite-preview", // Primary
+  "gemini-3-flash-preview",        // New Fallback: 3.0 Stable Preview
+  "gemini-2.5-flash",              // Secondary
+];
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const FETCH_TIMEOUT = 20_000;
 
@@ -42,6 +45,26 @@ Rules:
 - Try your best to get calories, protein, carbs, fat, and fiber per serving.
 - If the image does not contain any nutritional information, return { "error": "not_food" }`;
 
+
+async function callGeminiWithFallback(base64Image, mimeType, apiKey, customPrompt) {
+  let lastError = null;
+
+  for (const model of MODELS) {
+    try {
+      console.log(`Attempting image analysis with: ${model}`);
+      return await callGemini(model, base64Image, mimeType, apiKey, customPrompt);
+    } catch (error) {
+      lastError = error;
+      console.warn(`${model} failed: ${error.message}. Trying next fallback...`);
+    }
+  }
+
+  if (lastError?.name === "AbortError") {
+    throw new Error("Request timed out. Check your connection.");
+  }
+  throw new Error("All AI models are currently busy. Please try again in a few seconds.");
+}
+
 async function callGemini(model, base64Image, mimeType, apiKey, customPrompt = PROMPT) {
   const url = `${API_BASE}/${model}:generateContent?key=${apiKey}`;
 
@@ -59,7 +82,10 @@ async function callGemini(model, base64Image, mimeType, apiKey, customPrompt = P
         ],
       },
     ],
-    generationConfig: { response_mime_type: "application/json" },
+    generationConfig: { 
+      response_mime_type: "application/json",
+      temperature: 0.1
+    },
   };
 
   const controller = new AbortController();
@@ -86,69 +112,14 @@ export async function logMealFromImage(base64Image, mimeType, apiKey) {
   if (!apiKey) throw new Error("no_api_key");
   if (!base64Image) throw new Error("no_image");
 
-  try {
-    // 🔹 Try PRIMARY model
-    return await callGemini(
-      PRIMARY_VISION_MODEL,
-      base64Image,
-      mimeType,
-      apiKey,
-      PROMPT
-    );
-  } catch (primaryError) {
-    console.warn("Primary model failed, switching to secondary:", primaryError);
-
-    try {
-      // 🔹 Fallback to SECONDARY model
-      return await callGemini(
-        SECONDARY_VISION_MODEL,
-        base64Image,
-        mimeType,
-        apiKey,
-        PROMPT
-      );
-    } catch (secondaryError) {
-      console.error("Secondary model also failed:", secondaryError);
-
-      if (secondaryError.name === "AbortError") {
-        throw new Error("Request timed out. Check your connection and try again.");
-      }
-
-      throw new Error("Both AI models failed. Please try again later.");
-    }
-  }
+  return await callGeminiWithFallback(base64Image, mimeType, apiKey, PROMPT);
 }
 
 export async function scanLabelFromImage(base64Image, mimeType, apiKey) {
   if (!apiKey) throw new Error("no_api_key");
   if (!base64Image) throw new Error("no_image");
 
-  try {
-    return await callGemini(
-      PRIMARY_VISION_MODEL,
-      base64Image,
-      mimeType,
-      apiKey,
-      LABEL_PROMPT
-    );
-  } catch (primaryError) {
-    console.warn("Primary model failed, switching to secondary:", primaryError);
-
-    try {
-      return await callGemini(
-        SECONDARY_VISION_MODEL,
-        base64Image,
-        mimeType,
-        apiKey,
-        LABEL_PROMPT
-      );
-    } catch (secondaryError) {
-      if (secondaryError.name === "AbortError") {
-        throw new Error("Request timed out. Check your connection and try again.");
-      }
-      throw new Error("Both AI models failed. Please try again later.");
-    }
-  }
+  return await callGeminiWithFallback(base64Image, mimeType, apiKey, LABEL_PROMPT);
 }
 
 function parseGeminiResponse(data) {
