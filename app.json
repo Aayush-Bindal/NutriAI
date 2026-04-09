@@ -13,8 +13,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#E8EDE6"
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#295e42"
       },
       "package": "com.nutriai.app",
       "edgeToEdgeEnabled": true,
