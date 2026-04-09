@@ -77,6 +77,13 @@ async function callGeminiWithFallback(apiKey, parts) {
     } catch (error) {
       lastError = error;
       console.warn(`${model} failed: ${error.message}. Trying next fallback...`);
+      
+      // If the error is related to an invalid API key, throw immediately
+      // instead of trying all other models which will also fail
+      const errMsg = error.message.toLowerCase();
+      if (errMsg.includes("api key") || errMsg.includes("api_key_invalid")) {
+        throw new Error("Invalid API Key. Please check your profile settings.");
+      }
     }
   }
 
