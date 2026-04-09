@@ -208,7 +208,12 @@ export default function LogScreen() {
 
         {error && (
           <View style={s.errorCard}>
-            <Text style={s.errorTxt}>⚠️ {error}</Text>
+            <Ionicons
+              name="alert-circle-outline"
+              size={rf(18)}
+              color={COLORS.red}
+            />
+            <Text style={s.errorTxt}>{error}</Text>
           </View>
         )}
 
@@ -233,7 +238,7 @@ export default function LogScreen() {
             onPress={handleLabelPress} 
             activeOpacity={0.8}
           >
-            <Ionicons name="document-text" size={rf(20)} color="#fff" />
+            <Ionicons name="document-text" size={rf(20)} color={COLORS.white} />
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -241,7 +246,7 @@ export default function LogScreen() {
             onPress={handleCameraPress} 
             activeOpacity={0.8}
           >
-            <Ionicons name="camera" size={rf(26)} color="#fff" />
+            <Ionicons name="camera" size={rf(26)} color={COLORS.white} />
           </TouchableOpacity>
         </>
       )}
@@ -287,21 +292,29 @@ const s = StyleSheet.create({
   closeTxt: { fontSize: rf(14), color: COLORS.mid },
 
   errorCard: {
-    backgroundColor: "#FEF2F2",
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: rs(8),
+    backgroundColor: COLORS.redLight,
     borderRadius: rs(14),
     padding: rs(14),
     marginBottom: rs(14),
     borderLeftWidth: rs(4),
     borderLeftColor: COLORS.red,
   },
-  errorTxt: { color: "#b91c1c", fontSize: rf(14), fontWeight: "500" },
+  errorTxt: {
+    flex: 1,
+    color: COLORS.redDark,
+    fontSize: rf(14),
+    fontWeight: "500",
+  },
   fab: {
     position: "absolute",
     right: rs(20),
     width: rs(60),
     height: rs(60),
     borderRadius: rs(30),
-    backgroundColor: "#2D3B2D",
+    backgroundColor: COLORS.greenDark,
     justifyContent: "center",
     alignItems: "center",
     ...SHADOW.md,
@@ -313,7 +326,7 @@ const s = StyleSheet.create({
     width: rs(44),
     height: rs(44),
     borderRadius: rs(22),
-    backgroundColor: "#425642", // slightly lighter green to differentiate
+    backgroundColor: COLORS.greenMutedDark,
     justifyContent: "center",
     alignItems: "center",
     ...SHADOW.md,

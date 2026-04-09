@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 
@@ -7,6 +8,7 @@ export default function AiTip({ tip }) {
   return (
     <View style={[s.tip, SHADOW.sm]}>
       <View style={s.tipBadge}>
+        <Ionicons name="sparkles" size={rf(12)} color={COLORS.green} />
         <Text style={s.tipBadgeTxt}>AI Tip</Text>
       </View>
       <Text style={s.tipTxt}>{tip}</Text>
@@ -25,6 +27,9 @@ const s = StyleSheet.create({
     alignItems: "center",
   },
   tipBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: rs(4),
     backgroundColor: COLORS.greenLight,
     borderRadius: rs(99),
     paddingHorizontal: rs(12),

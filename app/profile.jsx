@@ -680,14 +680,14 @@ const s = StyleSheet.create({
     borderTopColor: COLORS.border,
   },
   saveBtn: {
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.greenMutedDark,
     borderRadius: rs(18),
     paddingVertical: rs(18),
     alignItems: "center",
     ...SHADOW.green,
   },
   saveTxt: {
-    color: "#fff",
+    color: COLORS.white,
     fontSize: rf(16),
     fontWeight: "700",
   },

@@ -127,7 +127,7 @@ export default function FoodInput({
           activeOpacity={0.85}
         >
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={COLORS.white} />
           ) : (
             <Text style={s.analyseTxt}>Analyse Nutrition</Text>
           )}
@@ -186,7 +186,7 @@ const s = StyleSheet.create({
   },
   suggTxt: { fontSize: rf(12), color: COLORS.green, fontWeight: "600" },
   analyseBtn: {
-    backgroundColor: "#2D3B2D",
+    backgroundColor: COLORS.greenDark,
     borderRadius: rs(18),
     paddingVertical: rs(18),
     alignItems: "center",
@@ -194,9 +194,9 @@ const s = StyleSheet.create({
     ...SHADOW.md,
   },
   analyseBtnOff: {
-    backgroundColor: "#b5d6b8",
+    backgroundColor: COLORS.greenDisabled,
     shadowOpacity: 0,
     elevation: 0,
   },
-  analyseTxt: { color: "#fff", fontSize: rf(16), fontWeight: "700" },
+  analyseTxt: { color: COLORS.white, fontSize: rf(16), fontWeight: "700" },
 });

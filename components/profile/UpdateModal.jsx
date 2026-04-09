@@ -26,7 +26,7 @@ const STATES = {
   },
   error: {
     icon: "cloud-offline-outline",
-    iconBg: "#FDECEA",
+    iconBg: COLORS.redLight,
     iconColor: COLORS.red,
     title: "Connection Error",
   },
@@ -143,7 +143,7 @@ export default function UpdateModal({
                   <Ionicons
                     name="download-outline"
                     size={rf(16)}
-                    color="#fff"
+                    color={COLORS.white}
                   />
                   <Text style={s.primaryTxt}>Download</Text>
                 </TouchableOpacity>
@@ -210,7 +210,7 @@ const s = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: COLORS.blackScrim,
   },
   cardWrap: {
     width: "100%",
@@ -286,7 +286,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     gap: rs(8),
     width: "100%",
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.greenMutedDark,
     borderRadius: rs(14),
     paddingVertical: rs(15),
     marginBottom: rs(6),
@@ -295,7 +295,7 @@ const s = StyleSheet.create({
   primaryTxt: {
     fontSize: rf(15),
     fontWeight: "700",
-    color: "#fff",
+    color: COLORS.white,
   },
   secondaryBtn: {
     paddingVertical: rs(10),

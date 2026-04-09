@@ -109,7 +109,7 @@ const s = StyleSheet.create({
 
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(26, 31, 27, 0.45)",
+    backgroundColor: COLORS.darkScrim,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -163,7 +163,7 @@ const s = StyleSheet.create({
     color: COLORS.mid,
   },
   removeBtn: {
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.greenMutedDark,
   },
   removeTxt: {
     fontSize: rf(14),

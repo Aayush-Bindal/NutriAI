@@ -104,7 +104,7 @@ const s = StyleSheet.create({
     gap: rs(4),
     ...SHADOW.sm,
   },
-  dayChipOn: { backgroundColor: "#2D3B2D" },
+  dayChipOn: { backgroundColor: COLORS.greenMutedDark },
   dayLbl: {
     fontSize: rf(11),
     fontWeight: "700",
@@ -112,7 +112,7 @@ const s = StyleSheet.create({
     textTransform: "uppercase",
   },
   dayNum: { fontSize: rf(18), fontWeight: "800", color: COLORS.dark },
-  dayTxtOn: { color: "#fff" },
+  dayTxtOn: { color: COLORS.white },
   dot: {
     width: rs(5),
     height: rs(5),
@@ -120,7 +120,7 @@ const s = StyleSheet.create({
     backgroundColor: COLORS.green,
     marginTop: rs(2),
   },
-  dotOn: { backgroundColor: "#fff" },
+  dotOn: { backgroundColor: COLORS.white },
   calendarChip: {
     width: rs(54),
     paddingVertical: rs(12),

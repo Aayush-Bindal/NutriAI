@@ -26,7 +26,7 @@ export default function MealTypeSelector({ mealType, setMealType }) {
               <Ionicons
                 name={m.icon}
                 size={rf(22)}
-                color={isSelected ? "#FFFFFF" : COLORS.text}
+                color={isSelected ? COLORS.white : COLORS.dark}
                 style={s.mealIcon}
               />
               <Text style={[s.mealTxt, isSelected && s.mealTxtOn]}>
@@ -61,7 +61,7 @@ const s = StyleSheet.create({
     ...SHADOW.sm,
   },
   mealChipOn: {
-    backgroundColor: "#425642",
+    backgroundColor: COLORS.greenMutedDark,
   },
   mealIcon: { marginBottom: rs(4) },
   mealTxt: { fontSize: rf(10), fontWeight: "700", color: COLORS.muted },

@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { SHADOW, rf, rs } from "../../constants/theme";
+import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 
 export default function LogMealButton({ bottomInset }) {
   const router = useRouter();
@@ -19,7 +19,7 @@ export default function LogMealButton({ bottomInset }) {
       }}
       activeOpacity={0.85}
     >
-      <Ionicons name="add" size={rf(28)} color="#fff" />
+      <Ionicons name="add" size={rf(28)} color={COLORS.white} />
     </TouchableOpacity>
   );
 }
@@ -31,7 +31,7 @@ const s = StyleSheet.create({
     width: rs(66),
     height: rs(66),
     borderRadius: rs(33),
-    backgroundColor: "#2D3B2D",
+    backgroundColor: COLORS.greenDark,
     alignItems: "center",
     justifyContent: "center",
     ...SHADOW.md,

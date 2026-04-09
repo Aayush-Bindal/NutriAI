@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 import { COLORS, SHADOW, rf, rs } from "../../constants/theme";
 import MealSection from "./MealSection";
@@ -28,7 +29,13 @@ export default function MealsList({ meals, isToday, selectedDay }) {
         )
       ) : (
         <View style={[s.empty, SHADOW.sm]}>
-          <Text style={s.emptyEmoji}>🍽️</Text>
+          <View style={s.emptyIcon}>
+            <Ionicons
+              name="restaurant-outline"
+              size={rf(42)}
+              color={COLORS.green}
+            />
+          </View>
           <Text style={s.emptyTitle}>Nothing logged yet</Text>
           <Text style={s.emptySub}>
             {isToday
@@ -65,7 +72,15 @@ const s = StyleSheet.create({
     borderWidth: 2,
     borderColor: COLORS.border,
   },
-  emptyEmoji: { fontSize: rf(48), marginBottom: rs(16) },
+  emptyIcon: {
+    width: rs(72),
+    height: rs(72),
+    borderRadius: rs(36),
+    backgroundColor: COLORS.greenLight,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: rs(16),
+  },
   emptyTitle: { fontSize: rf(18), fontWeight: "700", color: COLORS.dark },
   emptySub: {
     fontSize: rf(14),

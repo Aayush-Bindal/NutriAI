@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 
@@ -57,6 +58,7 @@ export default function NutritionResult({
       {result.tip && (
         <View style={s.tipRow}>
           <View style={s.tipBadge}>
+            <Ionicons name="sparkles" size={rf(11)} color={COLORS.green} />
             <Text style={s.tipBadgeTxt}>AI Tip</Text>
           </View>
           <Text style={s.tipTxt}>{result.tip}</Text>
@@ -135,6 +137,9 @@ const s = StyleSheet.create({
     borderTopColor: COLORS.border,
   },
   tipBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: rs(4),
     backgroundColor: COLORS.greenLight,
     borderRadius: rs(99),
     paddingHorizontal: rs(10),
@@ -149,7 +154,7 @@ const s = StyleSheet.create({
     fontWeight: "500",
   },
   addBtn: {
-    backgroundColor: "#2D3B2D",
+    backgroundColor: COLORS.greenDark,
     margin: rs(14),
     marginTop: 0,
     borderRadius: rs(16),
@@ -157,7 +162,7 @@ const s = StyleSheet.create({
     alignItems: "center",
   },
   addBtnDone: { backgroundColor: COLORS.green },
-  addTxt: { color: "#fff", fontSize: rf(16), fontWeight: "700" },
+  addTxt: { color: COLORS.white, fontSize: rf(16), fontWeight: "700" },
   saveBtn: {
     margin: rs(14),
     marginBottom: rs(8),

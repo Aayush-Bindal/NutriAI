@@ -22,15 +22,27 @@ export const COLORS = {
   green: "#3D7A4F",
   greenLight: "#D4E8D8",
   greenMid: "#6AAE7C",
+  greenDark: "#2D3B2D",
+  greenMutedDark: "#425642",
+  greenDeep: "#022C22",
+  greenDisabled: "#B5D6B8",
   dark: "#1A1F1B",
   mid: "#5A6B5D",
   muted: "#A0B0A3",
   white: "#FFFFFF",
   red: "#E8675A",
+  redLight: "#FEF2F2",
+  redDark: "#B91C1C",
   blue: "#5B8DD9",
+  blueLight: "#F0F5FC",
   amber: "#D4A843",
+  amberLight: "#FDF8EE",
   purple: "#9B7FD4",
   border: "#E2E8E0",
+  shadow: "#1A3020",
+  barTrack: "rgba(0,0,0,0.05)",
+  blackScrim: "rgba(0,0,0,0.4)",
+  darkScrim: "rgba(26, 31, 27, 0.45)",
 };
 
 export const FONTS = {
@@ -43,21 +55,21 @@ export const FONTS = {
 
 export const SHADOW = {
   sm: {
-    shadowColor: "#1A3020",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 3,
   },
   md: {
-    shadowColor: "#1A3020",
+    shadowColor: COLORS.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 14,
     elevation: 6,
   },
   green: {
-    shadowColor: "#3D7A4F",
+    shadowColor: COLORS.green,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,

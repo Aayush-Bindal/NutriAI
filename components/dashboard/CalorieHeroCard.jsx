@@ -63,7 +63,7 @@ const s = StyleSheet.create({
   },
   heroTitle: { fontSize: rf(18), fontWeight: "800", color: COLORS.dark },
   overBadge: {
-    backgroundColor: "#FEF2F2",
+    backgroundColor: COLORS.redLight,
     paddingHorizontal: rs(10),
     paddingVertical: rs(4),
     borderRadius: rs(12),
@@ -84,7 +84,7 @@ const s = StyleSheet.create({
   statLbl: {
     fontSize: rf(12),
     fontWeight: "500",
-    color: "#022C22",
+    color: COLORS.greenDeep,
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: rs(4),
@@ -92,13 +92,13 @@ const s = StyleSheet.create({
   statNum: {
     fontSize: rf(24),
     fontWeight: "500",
-    color: "#022C22",
+    color: COLORS.greenDeep,
     letterSpacing: -0.5,
   },
   statUnit: {
     fontSize: rf(12),
     fontWeight: "500",
-    color: "#022C22",
+    color: COLORS.greenDeep,
     marginTop: rs(2),
   },
   ringWrap: {

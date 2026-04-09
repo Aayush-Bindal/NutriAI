@@ -61,5 +61,5 @@ const s = StyleSheet.create({
     alignItems: "center",
     ...SHADOW.md,
   },
-  avatarTxt: { color: "#fff", fontSize: rf(18), fontWeight: "700" },
+  avatarTxt: { color: COLORS.white, fontSize: rf(18), fontWeight: "700" },
 });

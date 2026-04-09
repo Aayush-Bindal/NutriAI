@@ -174,7 +174,7 @@ const s = StyleSheet.create({
     width: rs(48),
     height: rs(48),
     borderRadius: rs(14),
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.greenMutedDark,
     alignItems: "center",
     justifyContent: "center",
     ...SHADOW.green,

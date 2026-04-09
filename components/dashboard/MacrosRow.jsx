@@ -9,28 +9,28 @@ export default function MacrosRow({ totals, macroGoals }) {
       value: totals.carbs,
       max: goals.carbs,
       color: COLORS.red,
-      bg: "#FDF2F1",
+      bg: COLORS.redLight,
     },
     {
       label: "Protein",
       value: totals.protein,
       max: goals.protein,
       color: COLORS.blue,
-      bg: "#F0F5FC",
+      bg: COLORS.blueLight,
     },
     {
       label: "Fat",
       value: totals.fat,
       max: goals.fat,
       color: COLORS.amber,
-      bg: "#FDF8EE",
+      bg: COLORS.amberLight,
     },
     {
       label: "Fiber",
       value: totals.fiber || 0,
       max: goals.fiber || 25,
       color: COLORS.green,
-      bg: "#EFF6F0",
+      bg: COLORS.cardAlt,
     },
   ];
 
@@ -96,7 +96,7 @@ const s = StyleSheet.create({
   },
   macroBar: {
     height: rs(6),
-    backgroundColor: "rgba(0,0,0,0.05)",
+    backgroundColor: COLORS.barTrack,
     borderRadius: rs(99),
     overflow: "hidden",
   },
