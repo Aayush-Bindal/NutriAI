@@ -110,7 +110,7 @@ export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
         <Ionicons
           name="arrow-forward"
           size={rf(18)}
-          color={canNext ? COLORS.white : COLORS.muted}
+          color={canNext ? COLORS.white : COLORS.onboardingDisabledBtnText}
         />
       </TouchableOpacity>
     </View>

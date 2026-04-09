@@ -40,10 +40,9 @@ const createStepStyles = (COLORS, SHADOW) => StyleSheet.create({
     paddingVertical: rs(18),
     borderRadius: rs(20),
     gap: rs(10),
-    ...SHADOW.green,
   },
   nextBtnDisabled: {
-    backgroundColor: COLORS.border,
+    backgroundColor: COLORS.onboardingDisabledBtn,
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -53,7 +52,7 @@ const createStepStyles = (COLORS, SHADOW) => StyleSheet.create({
     color: COLORS.white,
   },
   nextBtnTextDisabled: {
-    color: COLORS.muted,
+    color: COLORS.onboardingDisabledBtnText,
   },
   infoCard: {
     flexDirection: "row",

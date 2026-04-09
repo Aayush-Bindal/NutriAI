@@ -164,7 +164,6 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
     borderRadius: rs(20),
     gap: rs(10),
     marginTop: rs(20),
-    ...SHADOW.green,
   },
   btnText: {
     fontSize: rf(18),
