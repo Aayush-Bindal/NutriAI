@@ -14,8 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import FoodInput from "../components/log/FoodInput";
 import MealTypeSelector from "../components/log/MealTypeSelector";
 import NutritionResult from "../components/log/NutritionResult";
-import { logMeal } from "../constants/gemini";
-import { logMealFromImage, scanLabelFromImage } from "../constants/gemini-vision";
+import { logMeal, logMealFromImage, scanLabelFromImage } from "../constants/gemini";
 import { COLORS, SHADOW, rf, rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
@@ -115,12 +114,14 @@ export default function LogScreen() {
       
       try {
         const mimeType = result.assets[0].mimeType || "image/jpeg";
-        const data = await logMealFromImage(result.assets[0].base64, mimeType, profile.apiKey);
+        const data = await logMealFromImage(result.assets[0].base64, mimeType, profile.apiKey, input.trim());
         
         if (data.error) setError("That doesn't look like food. Try again!");
         else {
           setResult(data);
-          setInput("Analyzed from picture"); // Optional: set a placeholder text
+          if (!input.trim()) {
+            setInput("Analyzed from picture");
+          }
         }
       } catch (e) {
         setError(`Error: ${e.message}`);
@@ -161,7 +162,9 @@ export default function LogScreen() {
         if (data.error) setError("Could not read nutritional info from this image.");
         else {
           setResult(data);
-          setInput("Scanned from label");
+          if (!input.trim()) {
+            setInput("Scanned from label");
+          }
         }
       } catch (e) {
         setError(`Error: ${e.message}`);
@@ -200,6 +203,7 @@ export default function LogScreen() {
           savedMeals={savedMeals}
           onRemoveSavedMeal={removeSavedMeal}
           onSelectSavedMeal={selectSavedMeal}
+          showAnalyseBtn={!result}
         />
 
         {error && (
@@ -222,7 +226,7 @@ export default function LogScreen() {
         )}
       </ScrollView>
 
-      {(!input.trim() && !loading && !result) && (
+      {(!loading && !result) && (
         <>
           <TouchableOpacity 
             style={[s.miniFab, { bottom: insets.bottom + rs(105) }]} 

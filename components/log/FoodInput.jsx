@@ -17,6 +17,7 @@ export default function FoodInput({
   savedMeals,
   onRemoveSavedMeal,
   onSelectSavedMeal,
+  showAnalyseBtn = true,
 }) {
   // Filter out invalid entries (handle old string format or corrupted data)
   const validMeals = (savedMeals || []).filter(
@@ -55,19 +56,20 @@ export default function FoodInput({
           ))}
         </ScrollView>
       )}
-
-      <TouchableOpacity
-        style={[s.analyseBtn, (!input.trim() || loading) && s.analyseBtnOff]}
-        onPress={onAnalyse}
-        disabled={!input.trim() || loading}
-        activeOpacity={0.85}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={s.analyseTxt}>Analyse Nutrition</Text>
-        )}
-      </TouchableOpacity>
+      {showAnalyseBtn && (
+        <TouchableOpacity
+          style={[s.analyseBtn, (!input.trim() || loading) && s.analyseBtnOff]}
+          onPress={onAnalyse}
+          disabled={!input.trim() || loading}
+          activeOpacity={0.85}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={s.analyseTxt}>Analyse Nutrition</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </>
   );
 }
