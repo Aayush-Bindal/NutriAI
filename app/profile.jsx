@@ -209,7 +209,9 @@ export default function ProfileScreen() {
       ? (currentWeight / Math.pow(parseFloat(form.height) / 100, 2)).toFixed(1)
       : null;
 
-  const goalLabel = GOALS.find((g) => g.key === form.goal)?.label || "Not set";
+  const goal = GOALS.find((g) => g.key === form.goal);
+  const goalLabel = goal?.label || "Not set";
+  const goalIconName = goal?.iconName || "flag-outline";
 
   const appVersion = Constants.expoConfig?.version || "1.0.0";
 
@@ -264,10 +266,12 @@ export default function ProfileScreen() {
             </Text>
             <View style={s.profileCardMeta}>
               <View style={s.profileCardTag}>
-                <Text style={s.profileCardTagText}>
-                  {GOALS.find((g) => g.key === form.goal)?.emoji || "🎯"}{" "}
-                  {goalLabel}
-                </Text>
+                <Ionicons
+                  name={goalIconName}
+                  size={rf(11)}
+                  color={COLORS.green}
+                />
+                <Text style={s.profileCardTagText}>{goalLabel}</Text>
               </View>
             </View>
             <Text style={s.profileCardEdit}>
@@ -515,6 +519,9 @@ const s = StyleSheet.create({
   },
   profileCardTag: {
     alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: rs(4),
     backgroundColor: COLORS.greenLight,
     borderRadius: rs(8),
     paddingHorizontal: rs(8),

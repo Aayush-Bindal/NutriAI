@@ -11,9 +11,9 @@ import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 
 // ─── Data ────────────────────────────────────────────────
 export const GOALS = [
-  { key: "lose", label: "Lose Weight", emoji: "🔥" },
-  { key: "maintain", label: "Stay Same", emoji: "⚖️" },
-  { key: "gain", label: "Gain Weight", emoji: "💪" },
+  { key: "lose", label: "Lose Weight", iconName: "trending-down-outline" },
+  { key: "maintain", label: "Stay Same", iconName: "scale-outline" },
+  { key: "gain", label: "Gain Weight", iconName: "trending-up-outline" },
 ];
 
 export const ACTIVITY = [
@@ -21,40 +21,47 @@ export const ACTIVITY = [
     key: "sedentary",
     label: "Sedentary",
     desc: "Desk job, little exercise",
-    emoji: "🪑",
+    iconName: "bed-outline",
   },
   {
     key: "light",
     label: "Lightly Active",
     desc: "Light exercise 1-3x/week",
-    emoji: "🚶",
+    iconName: "walk-outline",
   },
   {
     key: "moderate",
     label: "Moderately Active",
     desc: "Moderate exercise 3-5x/week",
-    emoji: "🏃",
+    iconName: "fitness-outline",
   },
   {
     key: "active",
     label: "Very Active",
     desc: "Hard training 6-7x/week",
-    emoji: "🏋️",
+    iconName: "barbell-outline",
   },
 ];
 
 // ─── Small chip selector ─────────────────────────────────
-function SelectChip({ label, emoji, selected, onPress }) {
+function SelectChip({ label, iconName, selected, onPress }) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress();
       }}
       style={[s.chip, selected && s.chipOn]}
     >
-      <Text style={s.chipEmoji}>{emoji}</Text>
+      <Ionicons
+        name={iconName}
+        size={rf(16)}
+        color={selected ? COLORS.green : COLORS.mid}
+      />
       <Text style={[s.chipTxt, selected && s.chipTxtOn]}>{label}</Text>
       {selected && (
         <Ionicons name="checkmark-circle" size={rf(14)} color={COLORS.green} />
@@ -64,17 +71,24 @@ function SelectChip({ label, emoji, selected, onPress }) {
 }
 
 // ─── Option card (activity) ──────────────────────────────
-function OptionCard({ label, desc, emoji, selected, onPress }) {
+function OptionCard({ label, desc, iconName, selected, onPress }) {
   return (
     <TouchableOpacity
       activeOpacity={0.7}
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress();
       }}
       style={[s.optionCard, selected && s.optionCardOn]}
     >
-      <Text style={s.optionEmoji}>{emoji}</Text>
+      <Ionicons
+        name={iconName}
+        size={rf(20)}
+        color={selected ? COLORS.green : COLORS.mid}
+      />
       <View style={{ flex: 1 }}>
         <Text style={[s.optionLabel, selected && s.optionLabelOn]}>
           {label}
@@ -213,13 +227,13 @@ export default function ProfileForm({
       <View style={s.chipRow}>
         <SelectChip
           label="Male"
-          emoji="🙋‍♂️"
+          iconName="male-outline"
           selected={form.gender === "male"}
           onPress={() => set("gender", "male")}
         />
         <SelectChip
           label="Female"
-          emoji="🙋‍♀️"
+          iconName="female-outline"
           selected={form.gender === "female"}
           onPress={() => set("gender", "female")}
         />
@@ -232,7 +246,7 @@ export default function ProfileForm({
           <SelectChip
             key={g.key}
             label={g.label}
-            emoji={g.emoji}
+            iconName={g.iconName}
             selected={form.goal === g.key}
             onPress={() => set("goal", g.key)}
           />
@@ -247,7 +261,7 @@ export default function ProfileForm({
             key={a.key}
             label={a.label}
             desc={a.desc}
-            emoji={a.emoji}
+            iconName={a.iconName}
             selected={form.activity === a.key}
             onPress={() => set("activity", a.key)}
           />
@@ -373,7 +387,6 @@ const s = StyleSheet.create({
     borderColor: COLORS.green,
     backgroundColor: COLORS.greenLight,
   },
-  chipEmoji: { fontSize: rf(16) },
   chipTxt: {
     fontSize: rf(13),
     fontWeight: "600",
@@ -394,7 +407,6 @@ const s = StyleSheet.create({
     borderColor: COLORS.green,
     backgroundColor: COLORS.greenLight,
   },
-  optionEmoji: { fontSize: rf(20) },
   optionLabel: {
     fontSize: rf(14),
     fontWeight: "700",
