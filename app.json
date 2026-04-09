@@ -34,7 +34,11 @@
           "image": "./assets/images/icon.png",
           "imageWidth": 160,
           "resizeMode": "contain",
-          "backgroundColor": "#E8EDE6"
+          "backgroundColor": "#E8EDE6",
+          "dark": {
+            "image": "./assets/images/icon.png",
+            "backgroundColor": "#09110C"
+          }
         }
       ],
       "@react-native-community/datetimepicker"

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SystemUI from "expo-system-ui";
 import {
   createContext,
   useCallback,
@@ -7,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import { DARK_COLORS, LIGHT_COLORS, makeShadow } from "../constants/theme";
 
 const THEME_STORAGE_KEY = "nutriai_theme_mode";
@@ -31,6 +32,12 @@ export function ThemeProvider({ children }) {
       .finally(() => setLoaded(true));
   }, []);
 
+  useEffect(() => {
+    if (!loaded) return;
+
+    Appearance.setColorScheme(mode === "system" ? null : mode);
+  }, [loaded, mode]);
+
   const setMode = useCallback((nextMode) => {
     if (!THEME_MODES.includes(nextMode)) return;
     setModeState(nextMode);
@@ -40,6 +47,12 @@ export function ThemeProvider({ children }) {
   const resolvedMode = mode === "system" ? systemScheme || "light" : mode;
   const colors = resolvedMode === "dark" ? DARK_COLORS : LIGHT_COLORS;
   const shadow = useMemo(() => makeShadow(colors), [colors]);
+
+  useEffect(() => {
+    if (!loaded) return;
+
+    SystemUI.setBackgroundColorAsync(colors.bg).catch(console.warn);
+  }, [colors.bg, loaded]);
 
   const value = useMemo(
     () => ({
