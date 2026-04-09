@@ -7,7 +7,7 @@ export default function AiTip({ tip }) {
   return (
     <View style={[s.tip, SHADOW.sm]}>
       <View style={s.tipBadge}>
-        <Text style={s.tipBadgeTxt}>✨ AI Tip</Text>
+        <Text style={s.tipBadgeTxt}>AI Tip</Text>
       </View>
       <Text style={s.tipTxt}>{tip}</Text>
     </View>
