@@ -10,8 +10,10 @@ import {
 } from "react";
 import { Appearance, useColorScheme } from "react-native";
 import { DARK_COLORS, LIGHT_COLORS, makeShadow } from "../constants/theme";
+import { configureHaptics } from "../utils/haptics";
 
 const THEME_STORAGE_KEY = "nutriai_theme_mode";
+const HAPTICS_STORAGE_KEY = "nutriai_haptics_enabled";
 const THEME_MODES = ["system", "light", "dark"];
 
 const ThemeContext = createContext(null);
@@ -19,14 +21,24 @@ const ThemeContext = createContext(null);
 export function ThemeProvider({ children }) {
   const systemScheme = useColorScheme();
   const [mode, setModeState] = useState("system");
+  const [hapticsEnabled, setHapticsEnabledState] = useState(true);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.getItem(THEME_STORAGE_KEY)
-      .then((storedMode) => {
+    AsyncStorage.multiGet([THEME_STORAGE_KEY, HAPTICS_STORAGE_KEY])
+      .then((entries) => {
+        const storedMode = entries.find(([key]) => key === THEME_STORAGE_KEY)?.[1];
+        const storedHaptics = entries.find(
+          ([key]) => key === HAPTICS_STORAGE_KEY,
+        )?.[1];
+        const nextHapticsEnabled = storedHaptics !== "false";
+
         if (THEME_MODES.includes(storedMode)) {
           setModeState(storedMode);
         }
+
+        setHapticsEnabledState(nextHapticsEnabled);
+        configureHaptics(nextHapticsEnabled);
       })
       .catch(console.warn)
       .finally(() => setLoaded(true));
@@ -44,6 +56,14 @@ export function ThemeProvider({ children }) {
     AsyncStorage.setItem(THEME_STORAGE_KEY, nextMode).catch(console.warn);
   }, []);
 
+  const setHapticsEnabled = useCallback((nextEnabled) => {
+    configureHaptics(nextEnabled);
+    setHapticsEnabledState(nextEnabled);
+    AsyncStorage.setItem(HAPTICS_STORAGE_KEY, String(nextEnabled)).catch(
+      console.warn,
+    );
+  }, []);
+
   const resolvedMode = mode === "system" ? systemScheme || "light" : mode;
   const colors = resolvedMode === "dark" ? DARK_COLORS : LIGHT_COLORS;
   const shadow = useMemo(() => makeShadow(colors), [colors]);
@@ -59,11 +79,21 @@ export function ThemeProvider({ children }) {
       mode,
       resolvedMode,
       setMode,
+      hapticsEnabled,
+      setHapticsEnabled,
       colors,
       shadow,
       statusBarStyle: resolvedMode === "dark" ? "light" : "dark",
     }),
-    [colors, mode, resolvedMode, setMode, shadow],
+    [
+      colors,
+      hapticsEnabled,
+      mode,
+      resolvedMode,
+      setHapticsEnabled,
+      setMode,
+      shadow,
+    ],
   );
 
   if (!loaded) return null;

@@ -11,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { rf, rs } from "../../constants/theme";
 import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import * as Haptics from "../../utils/haptics";
 
 const PLACEHOLDERS = [
   "e.g., 2 rotis with dal makhani and lassi...",
@@ -125,7 +126,10 @@ export default function FoodInput({
       {showAnalyseBtn && (
         <TouchableOpacity
           style={[s.analyseBtn, (!input.trim() || loading) && s.analyseBtnOff]}
-          onPress={onAnalyse}
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            onAnalyse();
+          }}
           disabled={!input.trim() || loading}
           activeOpacity={0.85}
         >

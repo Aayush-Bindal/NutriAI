@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { rf, rs } from "../../constants/theme";
 import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import * as Haptics from "../../utils/haptics";
 
 const MEAL_TYPES = [
   { label: "Breakfast", icon: "partly-sunny-outline" },
@@ -23,7 +24,11 @@ export default function MealTypeSelector({ mealType, setMealType }) {
             <TouchableOpacity
               key={m.label}
               style={[s.mealChip, isSelected && s.mealChipOn]}
-              onPress={() => setMealType(m.label)}
+              onPress={() => {
+                if (isSelected) return;
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setMealType(m.label);
+              }}
               activeOpacity={0.75}
             >
               <Ionicons

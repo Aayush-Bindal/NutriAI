@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { rf, rs } from "../../constants/theme";
 import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import * as Haptics from "../../utils/haptics";
 
 export default function NutritionResult({
   result,
@@ -19,6 +20,12 @@ export default function NutritionResult({
   const handleSave = () => {
     onSaveMeal();
     setSaved(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const handleAdd = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    onAdd();
   };
 
   return (
@@ -87,7 +94,7 @@ export default function NutritionResult({
       {/* Add btn */}
       <TouchableOpacity
         style={[s.addBtn, added && s.addBtnDone]}
-        onPress={onAdd}
+        onPress={handleAdd}
         disabled={added}
         activeOpacity={0.85}
       >

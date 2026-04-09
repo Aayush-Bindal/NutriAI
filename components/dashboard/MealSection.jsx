@@ -4,6 +4,7 @@ import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { rf, rs } from "../../constants/theme";
 import { useMeals } from "../../context/MealContext";
 import { useTheme, useThemedStyles } from "../../context/ThemeContext";
+import * as Haptics from "../../utils/haptics";
 
 export default function MealSection({ title, items = [] }) {
   const { removeItem } = useMeals();
@@ -16,6 +17,7 @@ export default function MealSection({ title, items = [] }) {
 
   const confirmDelete = () => {
     if (deleteTarget) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       removeItem(title, deleteTarget.index);
       setDeleteTarget(null);
     }

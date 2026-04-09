@@ -19,6 +19,7 @@ import { rf, rs } from "../constants/theme";
 import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
+import * as Haptics from "../utils/haptics";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
@@ -89,6 +90,7 @@ export default function LogScreen() {
 
   const addToDiary = () => {
     if (!result) return;
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     addMeal(mealType, result.items, result.total, result.tip);
     setAdded(true);
     setTimeout(() => router.back(), 700);
@@ -103,6 +105,8 @@ export default function LogScreen() {
   };
 
   const handleCameraPress = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
     if (!profile.apiKey) {
       setError("No API key found. Tap your profile icon to add your Gemini API key.");
       return;
@@ -146,6 +150,8 @@ export default function LogScreen() {
   };
 
   const handleLabelPress = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
     if (!profile.apiKey) {
       setError("No API key found. Tap your profile icon to add your Gemini API key.");
       return;

@@ -1,6 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
 import Constants from "expo-constants";
-import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -22,6 +21,7 @@ import WeightSection from "../components/profile/WeightSection";
 import { rf, rs } from "../constants/theme";
 import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
+import * as Haptics from "../utils/haptics";
 import { checkForAppUpdate } from "../utils/appUpdate";
 
 const THEME_OPTIONS = [
@@ -34,7 +34,14 @@ const THEME_OPTIONS = [
 export default function ProfileScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { colors: COLORS, mode, resolvedMode, setMode } = useTheme();
+  const {
+    colors: COLORS,
+    mode,
+    resolvedMode,
+    setMode,
+    hapticsEnabled,
+    setHapticsEnabled,
+  } = useTheme();
   const s = useThemedStyles(createStyles);
   const isDark = resolvedMode === "dark";
   const {
@@ -373,6 +380,27 @@ export default function ProfileScreen() {
               );
             })}
           </View>
+          <View style={s.prefRow}>
+            <View style={s.prefCopy}>
+              <Text style={s.prefTitle}>Haptics</Text>
+              <Text style={s.prefHint}>Tactile feedback for taps and actions</Text>
+            </View>
+            <TouchableOpacity
+              style={[s.prefToggle, hapticsEnabled && s.prefToggleOn]}
+              activeOpacity={0.85}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: hapticsEnabled }}
+              onPress={() => {
+                const nextValue = !hapticsEnabled;
+                setHapticsEnabled(nextValue);
+                if (nextValue) {
+                  Haptics.selectionAsync();
+                }
+              }}
+            >
+              <View style={[s.prefThumb, hapticsEnabled && s.prefThumbOn]} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {profileExpanded && (
@@ -673,6 +701,52 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
   },
   themeTxtOn: {
     color: COLORS.white,
+  },
+  prefRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: rs(16),
+    paddingTop: rs(16),
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
+  prefCopy: {
+    flex: 1,
+    paddingRight: rs(12),
+  },
+  prefTitle: {
+    fontSize: rf(14),
+    fontWeight: "700",
+    color: COLORS.dark,
+  },
+  prefHint: {
+    fontSize: rf(12),
+    fontWeight: "500",
+    color: COLORS.muted,
+    marginTop: rs(4),
+    lineHeight: rf(18),
+  },
+  prefToggle: {
+    width: rs(52),
+    height: rs(32),
+    borderRadius: rs(16),
+    backgroundColor: COLORS.border,
+    padding: rs(3),
+    justifyContent: "center",
+  },
+  prefToggleOn: {
+    backgroundColor: COLORS.greenDisabled,
+  },
+  prefThumb: {
+    width: rs(26),
+    height: rs(26),
+    borderRadius: rs(13),
+    backgroundColor: COLORS.card,
+  },
+  prefThumbOn: {
+    alignSelf: "flex-end",
+    backgroundColor: COLORS.green,
   },
 
   card: {
