@@ -37,7 +37,7 @@ export default function CalorieRing({ eaten = 0, goal = 2000 }) {
       duration: 1200, // 1.2 seconds for a smooth fill
       easing: Easing.out(Easing.cubic),
     });
-  }, [pct]);
+  }, [pct, progress]);
 
   // Dynamically calculate the dasharray based on the animated progress value
   const animatedProps = useAnimatedProps(() => {
