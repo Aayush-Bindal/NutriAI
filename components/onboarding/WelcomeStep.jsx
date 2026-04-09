@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 
 export default function WelcomeStep({ onNext, onRestore }) {
@@ -8,11 +8,10 @@ export default function WelcomeStep({ onNext, onRestore }) {
     <View style={s.container}>
       <View style={s.top}>
         <View style={s.decoWrap}>
-          <View style={s.outerRing}>
-            <View style={s.innerRing}>
-              <Text style={s.emoji}>🥗</Text>
-            </View>
-          </View>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={s.appIcon}
+          />
         </View>
 
         <Text style={s.appName}>NutriAI</Text>
@@ -89,25 +88,16 @@ const s = StyleSheet.create({
     paddingBottom: rs(20),
   },
   top: { alignItems: "center", marginTop: rs(30) },
-  decoWrap: { marginBottom: rs(24) },
-  outerRing: {
-    width: rs(130),
-    height: rs(130),
-    borderRadius: rs(65),
-    backgroundColor: COLORS.greenLight,
+  decoWrap: {
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: rs(24),
   },
-  innerRing: {
-    width: rs(90),
-    height: rs(90),
-    borderRadius: rs(45),
-    backgroundColor: COLORS.card,
-    alignItems: "center",
-    justifyContent: "center",
-    ...SHADOW.md,
+  appIcon: {
+    width: rs(110),
+    height: rs(110),
+    resizeMode: "contain",
   },
-  emoji: { fontSize: rf(42) },
   appName: {
     fontSize: rf(42),
     fontWeight: "900",

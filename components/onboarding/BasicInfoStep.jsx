@@ -1,11 +1,44 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { Keyboard, Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs } from "../../constants/theme";
-import Chip from "./Chip";
+import { Keyboard, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 import LabelInput, { labelInputStyles as li } from "./LabelInput";
 import StepDots from "./StepDots";
 import st from "./stepStyles";
+
+function GenderOption({ label, iconName, selected, onPress }) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
+      style={[s.genderOption, selected && s.genderOptionSelected]}
+    >
+      <Ionicons
+        name={iconName}
+        size={rf(20)}
+        color={selected ? COLORS.green : COLORS.mid}
+        style={s.genderIcon}
+      />
+      <Text style={[s.genderLabel, selected && s.genderLabelSelected]}>
+        {label}
+      </Text>
+      {selected && (
+        <Ionicons
+          name="checkmark-circle"
+          size={rf(18)}
+          color={COLORS.green}
+          style={s.checkIcon}
+        />
+      )}
+    </TouchableOpacity>
+  );
+}
 
 export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
   const canNext = data.name.trim() && data.age && data.gender;
@@ -39,15 +72,15 @@ export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
 
           <Text style={li.label}>GENDER</Text>
           <View style={st.chipRow}>
-            <Chip
+            <GenderOption
               label="Male"
-              icon="🙋‍♂️"
+              iconName="male-outline"
               selected={data.gender === "male"}
               onPress={() => onChange({ gender: "male" })}
             />
-            <Chip
+            <GenderOption
               label="Female"
-              icon="🙋‍♀️"
+              iconName="female-outline"
               selected={data.gender === "female"}
               onPress={() => onChange({ gender: "female" })}
             />
@@ -77,3 +110,31 @@ export default function BasicInfoStep({ data, onChange, onNext, onBack }) {
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  genderOption: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: rs(14),
+    paddingHorizontal: rs(20),
+    borderRadius: rs(16),
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    ...SHADOW.sm,
+  },
+  genderOptionSelected: {
+    borderColor: COLORS.green,
+    backgroundColor: COLORS.greenLight,
+  },
+  genderIcon: { marginRight: rs(10) },
+  genderLabel: {
+    flex: 1,
+    fontSize: rf(16),
+    fontWeight: "600",
+    color: COLORS.mid,
+  },
+  genderLabelSelected: { color: COLORS.dark },
+  checkIcon: { marginLeft: rs(4) },
+});

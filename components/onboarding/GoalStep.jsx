@@ -1,10 +1,43 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { Text, TouchableOpacity, View } from "react-native";
-import { COLORS, rf, rs } from "../../constants/theme";
-import Chip from "./Chip";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { COLORS, rf, rs, SHADOW } from "../../constants/theme";
 import StepDots from "./StepDots";
 import st from "./stepStyles";
+
+function GoalOption({ label, iconName, selected, onPress }) {
+  return (
+    <TouchableOpacity
+      activeOpacity={0.7}
+      accessibilityLabel={label}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onPress();
+      }}
+      style={[s.goalOption, selected && s.goalOptionSelected]}
+    >
+      <Ionicons
+        name={iconName}
+        size={rf(20)}
+        color={selected ? COLORS.green : COLORS.mid}
+        style={s.goalIcon}
+      />
+      <Text style={[s.goalLabel, selected && s.goalLabelSelected]}>
+        {label}
+      </Text>
+      {selected && (
+        <Ionicons
+          name="checkmark-circle"
+          size={rf(18)}
+          color={COLORS.green}
+          style={s.checkIcon}
+        />
+      )}
+    </TouchableOpacity>
+  );
+}
 
 export default function GoalStep({ data, onChange, onNext, onBack }) {
   const canNext = !!data.goal;
@@ -19,21 +52,21 @@ export default function GoalStep({ data, onChange, onNext, onBack }) {
         <Text style={st.desc}>What&apos;s your primary goal right now?</Text>
 
         <View style={{ marginTop: rs(20), gap: rs(10) }}>
-          <Chip
+          <GoalOption
             label="Lose Weight"
-            icon="🔥"
+            iconName="trending-down-outline"
             selected={data.goal === "lose"}
             onPress={() => onChange({ goal: "lose" })}
           />
-          <Chip
+          <GoalOption
             label="Stay Same"
-            icon="⚖️"
+            iconName="scale-outline"
             selected={data.goal === "maintain"}
             onPress={() => onChange({ goal: "maintain" })}
           />
-          <Chip
+          <GoalOption
             label="Gain Weight"
-            icon="💪"
+            iconName="trending-up-outline"
             selected={data.goal === "gain"}
             onPress={() => onChange({ goal: "gain" })}
           />
@@ -61,3 +94,30 @@ export default function GoalStep({ data, onChange, onNext, onBack }) {
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  goalOption: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: rs(14),
+    paddingHorizontal: rs(20),
+    borderRadius: rs(16),
+    backgroundColor: COLORS.card,
+    borderWidth: 2,
+    borderColor: COLORS.border,
+    ...SHADOW.sm,
+  },
+  goalOptionSelected: {
+    borderColor: COLORS.green,
+    backgroundColor: COLORS.greenLight,
+  },
+  goalIcon: { marginRight: rs(10) },
+  goalLabel: {
+    flex: 1,
+    fontSize: rf(16),
+    fontWeight: "600",
+    color: COLORS.mid,
+  },
+  goalLabelSelected: { color: COLORS.dark },
+  checkIcon: { marginLeft: rs(4) },
+});
