@@ -230,6 +230,26 @@ export default function ProfileForm({
         </View>
       </View>
 
+      {/* Body Fat (optional) */}
+      <View style={{ marginBottom: rs(16) }}>
+        <Text style={s.fieldLabel}>BODY FAT % (OPTIONAL)</Text>
+        <View style={s.inputBox}>
+          <TextInput
+            style={s.inputBoxText}
+            value={form.bodyFat}
+            onChangeText={(v) => set("bodyFat", v.replace(/[^0-9.]/g, ""))}
+            keyboardType="decimal-pad"
+            placeholder="20"
+            placeholderTextColor={COLORS.muted}
+          />
+          <Text style={s.inputUnit}>%</Text>
+        </View>
+        <Text style={s.bodyFatHint}>
+          Used for a more accurate BMR (Katch-McArdle). Leave empty to use
+          Mifflin-St Jeor.
+        </Text>
+      </View>
+
       {/* Gender */}
       <Text style={s.fieldLabel}>GENDER</Text>
       <View style={s.chipRow}>
@@ -363,6 +383,14 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
     gap: rs(6),
   },
   rowTwo: { flexDirection: "row", gap: rs(12), marginBottom: rs(16) },
+  bodyFatHint: {
+    fontSize: rf(11),
+    fontWeight: "500",
+    color: COLORS.muted,
+    marginTop: rs(6),
+    marginLeft: rs(4),
+    lineHeight: rf(16),
+  },
   chipRow: {
     flexDirection: "row",
     flexWrap: "wrap",

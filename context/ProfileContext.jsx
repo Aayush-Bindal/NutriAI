@@ -19,6 +19,7 @@ const DEFAULT_PROFILE = {
   gender: "",
   weight: "",
   height: "",
+  bodyFat: "",
   goal: "",
   activity: "",
   apiKey: "",
@@ -44,7 +45,7 @@ function parseSavedMeals(raw) {
 }
 
 function calcGoals(profile) {
-  const { age, gender, weight, height, goal, activity } = profile;
+  const { age, gender, weight, height, bodyFat, goal, activity } = profile;
 
   if (!age || !weight || !height) {
     return {
@@ -56,12 +57,15 @@ function calcGoals(profile) {
   const w = parseFloat(weight);
   const h = parseFloat(height);
   const a = parseFloat(age);
+  const bf = parseFloat(bodyFat);
 
-  // Mifflin-St Jeor BMR
+  // Katch-McArdle BMR (uses lean body mass) when body fat % is provided
   const bmr =
-    gender === "female"
-      ? 10 * w + 6.25 * h - 5 * a - 161
-      : 10 * w + 6.25 * h - 5 * a + 5;
+    bf && bf > 0 && bf < 100
+      ? 370 + 21.6 * (w * (1 - bf / 100))
+      : gender === "female"
+        ? 10 * w + 6.25 * h - 5 * a - 161
+        : 10 * w + 6.25 * h - 5 * a + 5;
 
   const activityMap = {
     sedentary: 1.2,

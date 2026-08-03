@@ -60,6 +60,7 @@ export default function ProfileScreen() {
     gender: profile.gender || "",
     weight: profile.weight || "",
     height: profile.height || "",
+    bodyFat: profile.bodyFat || "",
     goal: profile.goal || "",
     activity: profile.activity || "",
     apiKey: profile.apiKey || "",

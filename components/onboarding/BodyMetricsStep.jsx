@@ -86,6 +86,17 @@ export default function BodyMetricsStep({ data, onChange, onNext, onBack }) {
             unit="kg"
           />
 
+          <LabelInput
+            label="Body Fat (optional)"
+            value={data.bodyFat}
+            onChangeText={(v) =>
+              onChange({ bodyFat: v.replace(/[^0-9.]/g, "") })
+            }
+            keyboardType="decimal-pad"
+            placeholder="e.g. 20"
+            unit="%"
+          />
+
           <View style={li.wrap}>
             <View style={hu.labelRow}>
               <Text style={li.label}>HEIGHT</Text>
@@ -167,7 +178,8 @@ export default function BodyMetricsStep({ data, onChange, onNext, onBack }) {
         <View style={st.infoCard}>
           <Ionicons name="body-outline" size={rf(24)} color={COLORS.green} />
           <Text style={st.infoCardText}>
-            We use the Mifflin-St Jeor equation to calculate your BMR and daily
+            We use the Katch-McArdle equation when body fat is provided, and the
+            Mifflin-St Jeor equation otherwise, to calculate your BMR and daily
             needs.
           </Text>
         </View>

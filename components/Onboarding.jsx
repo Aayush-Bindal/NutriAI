@@ -41,6 +41,7 @@ export default function Onboarding() {
     gender: "",
     weight: "",
     height: "",
+    bodyFat: "",
     goal: "",
     activity: "",
     apiKey: "",
