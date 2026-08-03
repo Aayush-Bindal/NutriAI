@@ -1,9 +1,7 @@
 const MODELS = [
-  "gemini-3.1-flash-lite-preview", // 1. Primary: Fastest
-  "gemini-2.5-flash",              // 2. Fallback: 2.5 cluster
-  "gemini-2.0-flash-001",          // 3. Pinned 2.0 stable version (highly reliable)
-  "gemini-2.5-pro",                // 4. Pro model (Uses entirely different servers than Flash)
-  "gemini-flash-latest"            // 5. Google's auto-router (Finds the least busy Flash node)
+  "gemini-flash-lite-latest", // 1. Primary: Fastest, auto-updates to the latest Lite model 
+  "gemini-flash-latest",      // 2. Fallback: Auto-updates to the latest standard Flash 
+  "gemini-pro-latest",        // 3. Pro model: Auto-updates to the latest Pro version 
 ];
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const FETCH_TIMEOUT = 15_000;
