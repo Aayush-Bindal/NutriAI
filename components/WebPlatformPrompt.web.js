@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { COLORS } from "../constants/theme";
 import { getLatestApkUrl } from "../utils/getApkUrl";
-
-const DISMISS_KEY = "nutriai_pwa_prompt_dismissed";
 
 function isAndroid() {
   return /android/i.test(navigator.userAgent);
@@ -20,16 +18,85 @@ function isPwaInstalled() {
   );
 }
 
+function DownloadIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+      <rect width="48" height="48" rx="14" fill="#E8EDE6" />
+      <path
+        d="M24 12v24M16 20l8 8 8-8"
+        stroke="#295e42"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 32v4a2 2 0 002 2h20a2 2 0 002-2v-4"
+        stroke="#295e42"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+      <rect width="48" height="48" rx="14" fill="#E8EDE6" />
+      <rect
+        x="14"
+        y="8"
+        width="20"
+        height="32"
+        rx="4"
+        stroke="#295e42"
+        strokeWidth="2.5"
+        fill="none"
+      />
+      <circle cx="24" cy="30" r="2" fill="#295e42" />
+      <path
+        d="M24 14v2"
+        stroke="#295e42"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M24 34v2"
+        stroke="#295e42"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="#295e42" strokeWidth="2" />
+      <path
+        d="M8 12l3 3 5-5"
+        stroke="#295e42"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export default function WebPlatformPrompt() {
   const [visible, setVisible] = useState(false);
   const [apkUrl, setApkUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [installed, setInstalled] = useState(false);
 
   useEffect(() => {
-    if (isPwaInstalled()) return;
-
-    const dismissed = localStorage.getItem(DISMISS_KEY);
-    if (dismissed) return;
+    if (isPwaInstalled()) {
+      setInstalled(true);
+      return;
+    }
 
     if (!isAndroid() && !isIOS()) return;
 
@@ -46,12 +113,21 @@ export default function WebPlatformPrompt() {
     }
   }, []);
 
-  if (!visible) return null;
+  useEffect(() => {
+    if (!visible) return;
+    const mq = window.matchMedia("(display-mode: standalone)");
+    const handler = () => {
+      if (mq.matches) {
+        setInstalled(true);
+        setVisible(false);
+      }
+    };
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [visible]);
 
-  const handleDismiss = () => {
-    localStorage.setItem(DISMISS_KEY, "1");
-    setVisible(false);
-  };
+  if (!visible && !isAndroid() && !isIOS()) return null;
+  if (installed) return null;
 
   const handleDownload = () => {
     if (apkUrl) {
@@ -60,27 +136,15 @@ export default function WebPlatformPrompt() {
   };
 
   return (
-    <View style={styles.banner}>
-      <View style={styles.inner}>
-        <View style={styles.row}>
-          <Ionicons
-            name={isAndroid() ? "download-outline" : "phone-portrait-outline"}
-            size={20}
-            color="#295e42"
-          />
-          <Text style={styles.title}>
-            {isAndroid() ? "Download APK" : "Install NutriAI"}
-          </Text>
-          <TouchableOpacity onPress={handleDismiss} style={styles.closeBtn}>
-            <Ionicons name="close" size={18} color="#888" />
-          </TouchableOpacity>
-        </View>
-
+    <View style={styles.overlay}>
+      <View style={styles.card}>
         {isAndroid() ? (
           <>
+            <DownloadIcon />
+            <Text style={styles.title}>Download NutriAI APK</Text>
             <Text style={styles.body}>
-              Install the APK directly on your Android device for the full app
-              experience.
+              You need to download and install the APK to use NutriAI on
+              Android. The browser version is not available.
             </Text>
             <TouchableOpacity
               style={styles.primaryBtn}
@@ -95,8 +159,11 @@ export default function WebPlatformPrompt() {
           </>
         ) : (
           <>
+            <PhoneIcon />
+            <Text style={styles.title}>Add to Home Screen</Text>
             <Text style={styles.body}>
-              Add NutriAI to your Home Screen for a full app experience.
+              Tap Share then Add to Home Screen to install NutriAI as a
+              full-screen app.
             </Text>
             <Text style={styles.warning}>
               Your Gemini API key is stored in browser storage and is not as
@@ -117,9 +184,11 @@ export default function WebPlatformPrompt() {
             </View>
             <TouchableOpacity
               style={styles.primaryBtn}
-              onPress={handleDismiss}
+              onPress={() => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
             >
-              <Text style={styles.primaryBtnText}>Got it</Text>
+              <Text style={styles.primaryBtnText}>Follow Steps Above</Text>
             </TouchableOpacity>
           </>
         )}
@@ -129,82 +198,81 @@ export default function WebPlatformPrompt() {
 }
 
 const styles = StyleSheet.create({
-  banner: {
+  overlay: {
     position: "absolute",
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
-    zIndex: 1000,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 12,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 20,
-  },
-  inner: {
-    maxWidth: 480,
-    alignSelf: "center",
-    width: "100%",
-  },
-  row: {
-    flexDirection: "row",
+    bottom: 0,
+    justifyContent: "center",
     alignItems: "center",
-    marginBottom: 8,
+    backgroundColor: COLORS.bg,
+    zIndex: 9999,
+    padding: 20,
+  },
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: COLORS.card,
+    borderRadius: 20,
+    padding: 28,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
   },
   title: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: "700",
-    color: "#123020",
-    marginLeft: 8,
-  },
-  closeBtn: {
-    padding: 4,
+    fontSize: 20,
+    fontWeight: "900",
+    color: COLORS.dark,
+    textAlign: "center",
+    marginTop: 14,
+    marginBottom: 8,
   },
   body: {
-    fontSize: 13,
-    color: "#557062",
-    lineHeight: 19,
-    marginBottom: 10,
+    fontSize: 14,
+    color: COLORS.mid,
+    textAlign: "center",
+    lineHeight: 21,
+    marginBottom: 14,
   },
   warning: {
     fontSize: 12,
-    color: "#b45309",
-    backgroundColor: "#FEF3C7",
+    color: "#92400e",
+    backgroundColor: COLORS.amberLight,
     borderRadius: 8,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     lineHeight: 17,
+    textAlign: "center",
   },
   primaryBtn: {
-    backgroundColor: "#295e42",
-    borderRadius: 10,
-    paddingVertical: 12,
+    backgroundColor: COLORS.green,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 32,
     alignItems: "center",
     width: "100%",
   },
   primaryBtnText: {
-    color: "#FFFFFF",
-    fontSize: 14,
+    color: COLORS.white,
+    fontSize: 15,
     fontWeight: "700",
   },
   instructions: {
-    backgroundColor: "#F0F4F2",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
+    width: "100%",
+    backgroundColor: COLORS.cardAlt,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
   },
   step: {
     fontSize: 13,
-    color: "#123020",
+    color: COLORS.dark,
     lineHeight: 20,
-    marginBottom: 2,
+    marginBottom: 3,
   },
   bold: {
     fontWeight: "700",
