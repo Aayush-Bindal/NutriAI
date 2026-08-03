@@ -18,73 +18,28 @@ function isPwaInstalled() {
   );
 }
 
-function DownloadIcon() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-      <rect width="48" height="48" rx="14" fill="#E8EDE6" />
-      <path
-        d="M24 12v24M16 20l8 8 8-8"
-        stroke="#295e42"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M12 32v4a2 2 0 002 2h20a2 2 0 002-2v-4"
-        stroke="#295e42"
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+function svgDataUri(svg) {
+  return "data:image/svg+xml," + encodeURIComponent(svg);
 }
 
-function PhoneIcon() {
-  return (
-    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-      <rect width="48" height="48" rx="14" fill="#E8EDE6" />
-      <rect
-        x="14"
-        y="8"
-        width="20"
-        height="32"
-        rx="4"
-        stroke="#295e42"
-        strokeWidth="2.5"
-        fill="none"
-      />
-      <circle cx="24" cy="30" r="2" fill="#295e42" />
-      <path
-        d="M24 14v2"
-        stroke="#295e42"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-      <path
-        d="M24 34v2"
-        stroke="#295e42"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+const DOWNLOAD_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <rect width="48" height="48" rx="14" fill="#E8EDE6"/>
+  <path d="M24 12v24M16 20l8 8 8-8" stroke="#295e42" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <path d="M12 32v4a2 2 0 002 2h20a2 2 0 002-2v-4" stroke="#295e42" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>`;
 
-function CheckIcon() {
-  return (
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" stroke="#295e42" strokeWidth="2" />
-      <path
-        d="M8 12l3 3 5-5"
-        stroke="#295e42"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
+const PHONE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <rect width="48" height="48" rx="14" fill="#E8EDE6"/>
+  <rect x="14" y="8" width="20" height="32" rx="4" stroke="#295e42" stroke-width="2.5" fill="none"/>
+  <circle cx="24" cy="30" r="2" fill="#295e42"/>
+  <path d="M24 14v2" stroke="#295e42" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <path d="M24 34v2" stroke="#295e42" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+</svg>`;
+
+const CHECK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="10" stroke="#295e42" stroke-width="2" fill="none"/>
+  <path d="M8 12l3 3 5-5" stroke="#295e42" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>`;
 
 export default function WebPlatformPrompt() {
   const [visible, setVisible] = useState(false);
@@ -140,7 +95,13 @@ export default function WebPlatformPrompt() {
       <View style={styles.card}>
         {isAndroid() ? (
           <>
-            <DownloadIcon />
+            <img
+              src={svgDataUri(DOWNLOAD_SVG)}
+              width={48}
+              height={48}
+              alt="download"
+              style={styles.icon}
+            />
             <Text style={styles.title}>Download NutriAI APK</Text>
             <Text style={styles.body}>
               You need to download and install the APK to use NutriAI on
@@ -159,7 +120,13 @@ export default function WebPlatformPrompt() {
           </>
         ) : (
           <>
-            <PhoneIcon />
+            <img
+              src={svgDataUri(PHONE_SVG)}
+              width={48}
+              height={48}
+              alt="phone"
+              style={styles.icon}
+            />
             <Text style={styles.title}>Add to Home Screen</Text>
             <Text style={styles.body}>
               Tap Share then Add to Home Screen to install NutriAI as a
@@ -223,12 +190,15 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 8,
   },
+  icon: {
+    marginBottom: 4,
+  },
   title: {
     fontSize: 20,
     fontWeight: "900",
     color: COLORS.dark,
     textAlign: "center",
-    marginTop: 14,
+    marginTop: 10,
     marginBottom: 8,
   },
   body: {
