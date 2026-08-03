@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Appearance, useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme } from "react-native";
 import { DARK_COLORS, LIGHT_COLORS, makeShadow } from "../constants/theme";
 import { configureHaptics } from "../utils/haptics";
 
@@ -47,6 +47,11 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
 
+    if (Platform.OS === "web") {
+      document.documentElement.style.colorScheme = mode === "system" ? "" : mode;
+      return;
+    }
+
     Appearance.setColorScheme(mode === "system" ? null : mode);
   }, [loaded, mode]);
 
@@ -70,6 +75,11 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     if (!loaded) return;
+
+    if (Platform.OS === "web") {
+      document.body.style.backgroundColor = colors.bg;
+      return;
+    }
 
     SystemUI.setBackgroundColorAsync(colors.bg).catch(console.warn);
   }, [colors.bg, loaded]);

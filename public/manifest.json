@@ -1,0 +1,25 @@
+{
+  "name": "NutriAI Calorie Tracker",
+  "short_name": "NutriAI",
+  "description": "AI-powered calorie and nutrition tracker.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8EDE6",
+  "theme_color": "#295e42",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

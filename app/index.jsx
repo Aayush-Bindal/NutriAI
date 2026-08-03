@@ -1,7 +1,7 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { Platform, ScrollView, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import AppDatePicker from "../components/dashboard/AppDatePicker";
 import AiTip from "../components/dashboard/AiTip";
 import CalorieHeroCard from "../components/dashboard/CalorieHeroCard";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
@@ -107,7 +107,7 @@ export default function Dashboard() {
       <LogMealButton bottomInset={insets.bottom} />
 
       {showPicker && (
-        <DateTimePicker
+        <AppDatePicker
           value={
             customDate ||
             (selectedIdx >= 0 ? weekDays[selectedIdx].fullDate : new Date())

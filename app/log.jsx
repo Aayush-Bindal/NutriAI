@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import FoodInput from "../components/log/FoodInput";
 import MealTypeSelector from "../components/log/MealTypeSelector";
 import NutritionResult from "../components/log/NutritionResult";
@@ -20,6 +19,7 @@ import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
 import * as Haptics from "../utils/haptics";
+import { pickImageFromCamera } from "../utils/imageInput";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
@@ -118,28 +118,20 @@ export default function LogScreen() {
       return;
     }
 
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (permissionResult.granted === false) {
+    const image = await pickImageFromCamera();
+    if (image.error === "permission") {
       setError("Camera access is required to take pictures of your food.");
       return;
     }
 
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false,
-      quality: 0.5,
-      base64: true,
-    });
-
-    if (!result.canceled && result.assets[0].base64) {
+    if (!image.canceled && image.base64) {
       setLoading(true);
       setError(null);
       setResult(null);
       setAdded(false);
       
       try {
-        const mimeType = result.assets[0].mimeType || "image/jpeg";
-        const data = await logMealFromImage(result.assets[0].base64, mimeType, profile.apiKey, input.trim());
+        const data = await logMealFromImage(image.base64, image.mimeType, profile.apiKey, input.trim());
         
         if (data.error) setError("That doesn't look like food. Try again!");
         else {
@@ -163,28 +155,20 @@ export default function LogScreen() {
       return;
     }
 
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (permissionResult.granted === false) {
+    const image = await pickImageFromCamera();
+    if (image.error === "permission") {
       setError("Camera access is required to scan labels.");
       return;
     }
 
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false, // Don't force crop for labels
-      quality: 0.5,
-      base64: true,
-    });
-
-    if (!result.canceled && result.assets[0].base64) {
+    if (!image.canceled && image.base64) {
       setLoading(true);
       setError(null);
       setResult(null);
       setAdded(false);
       
       try {
-        const mimeType = result.assets[0].mimeType || "image/jpeg";
-        const data = await scanLabelFromImage(result.assets[0].base64, mimeType, profile.apiKey);
+        const data = await scanLabelFromImage(image.base64, image.mimeType, profile.apiKey);
         
         if (data.error) setError("Could not read nutritional info from this image.");
         else {

@@ -1,9 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system/legacy";
-import * as SecureStore from "expo-secure-store";
-import * as Sharing from "expo-sharing";
 import { createContext, useContext, useEffect, useState } from "react";
+import { createBackupFile, restoreBackupFile } from "../utils/backup";
+import { deleteApiKey, getApiKey, setApiKey } from "../utils/apiKeyStore";
 
 const STORAGE_KEY = "nutriai_profile";
 const SECURE_API_KEY = "nutriai_api_key";
@@ -114,7 +112,7 @@ export function ProfileProvider({ children }) {
     async function loadData() {
       try {
         const raw = await AsyncStorage.getItem(STORAGE_KEY);
-        const secureApiKey = await SecureStore.getItemAsync(SECURE_API_KEY);
+        const secureApiKey = await getApiKey(SECURE_API_KEY);
         const obDone = await AsyncStorage.getItem(ONBOARDING_KEY);
         const whRaw = await AsyncStorage.getItem(WEIGHT_HISTORY_KEY);
 
@@ -143,7 +141,7 @@ export function ProfileProvider({ children }) {
           // Migration step: If a key exists in plain text (old version) but not in SecureStore, move it.
           if (saved.apiKey && !secureApiKey) {
             finalApiKey = saved.apiKey;
-            await SecureStore.setItemAsync(SECURE_API_KEY, finalApiKey);
+            await setApiKey(SECURE_API_KEY, finalApiKey);
 
             // Remove the plaintext key from the AsyncStorage payload
             delete saved.apiKey;
@@ -188,11 +186,11 @@ export function ProfileProvider({ children }) {
 
       // Save API Key to SecureStore
       if (apiKey) {
-        SecureStore.setItemAsync(SECURE_API_KEY, apiKey).catch((e) =>
+        setApiKey(SECURE_API_KEY, apiKey).catch((e) =>
           console.warn(e),
         );
       } else {
-        SecureStore.deleteItemAsync(SECURE_API_KEY).catch((e) =>
+        deleteApiKey(SECURE_API_KEY).catch((e) =>
           console.warn(e),
         );
       }
@@ -242,9 +240,7 @@ export function ProfileProvider({ children }) {
       backup[SAVED_MEALS_KEY] = JSON.stringify(savedMeals);
 
       const payload = JSON.stringify({ version: 1, date: new Date().toISOString(), data: backup }, null, 2);
-      const filePath = `${FileSystem.cacheDirectory}nutriai-backup.json`;
-      await FileSystem.writeAsStringAsync(filePath, payload);
-      await Sharing.shareAsync(filePath, { mimeType: "application/json", dialogTitle: "Save NutriAI Backup" });
+      await createBackupFile(payload);
       return { success: true };
     } catch (e) {
       console.warn("Backup error:", e);
@@ -254,11 +250,10 @@ export function ProfileProvider({ children }) {
 
   const restoreFromBackup = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({ type: "application/json", copyToCacheDirectory: true });
+      const result = await restoreBackupFile();
       if (result.canceled) return { success: false, canceled: true };
 
-      const file = result.assets[0];
-      const raw = await FileSystem.readAsStringAsync(file.uri);
+      const raw = result.raw;
       const parsed = JSON.parse(raw);
 
       if (!parsed.data) {

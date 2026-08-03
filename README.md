@@ -199,6 +199,18 @@ npx expo start
 
 Scan the QR code with **Expo Go** on your phone, or press `a` for Android emulator / `i` for iOS simulator.
 
+### Browser / PWA
+
+```bash
+# Start the browser dev server
+npm run web
+
+# Create a production web build in dist/
+npm run build:web
+```
+
+The browser version can be installed as a PWA from supported browsers. On web, NutriAI stores your Gemini API key in browser storage instead of the iOS/Android secure enclave, so only use it on devices and browser profiles you trust.
+
 ## How It Works
 
 1. **Onboarding** — Enter your details (name, age, gender, weight, height, goal, activity level). The app calculates your daily calorie and macro targets.

@@ -2,8 +2,9 @@ import Constants from "expo-constants";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 import Onboarding from "../components/Onboarding";
+import WebViewportGate from "../components/WebViewportGate";
 import UpdateModal from "../components/profile/UpdateModal";
 import { MealProvider } from "../context/MealContext";
 import { ProfileProvider, useProfile } from "../context/ProfileContext";
@@ -22,7 +23,7 @@ function AppContent() {
   const appVersion = Constants.expoConfig?.version || "1.0.0";
 
   useEffect(() => {
-    if (!onboardingDone || hasCheckedForUpdates.current) return;
+    if (Platform.OS === "web" || !onboardingDone || hasCheckedForUpdates.current) return;
 
     hasCheckedForUpdates.current = true;
     let isMounted = true;
@@ -98,11 +99,20 @@ function AppContent() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    const nav = globalThis.navigator;
+    if (Platform.OS !== "web" || !nav?.serviceWorker) return;
+
+    nav.serviceWorker.register("/service-worker.js").catch(() => undefined);
+  }, []);
+
   return (
-    <ThemeProvider>
-      <ProfileProvider>
-        <AppContent />
-      </ProfileProvider>
-    </ThemeProvider>
+    <WebViewportGate>
+      <ThemeProvider>
+        <ProfileProvider>
+          <AppContent />
+        </ProfileProvider>
+      </ThemeProvider>
+    </WebViewportGate>
   );
 }
