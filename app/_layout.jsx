@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useRef, useState } from "react";
 import { Platform, View } from "react-native";
 import Onboarding from "../components/Onboarding";
+import WebPlatformPrompt from "../components/WebPlatformPrompt";
 import WebViewportGate from "../components/WebViewportGate";
 import UpdateModal from "../components/profile/UpdateModal";
 import { MealProvider } from "../context/MealContext";
@@ -113,6 +114,7 @@ export default function RootLayout() {
           <AppContent />
         </ProfileProvider>
       </ThemeProvider>
+      <WebPlatformPrompt />
     </WebViewportGate>
   );
 }
