@@ -180,5 +180,12 @@ function parseGeminiResponse(data) {
   if (!parsed.items || !parsed.total || !parsed.meal) {
     throw new Error("Unexpected response format. Please try again.");
   }
-  return parsed;
+
+  return {
+    ...parsed,
+    total: {
+      ...parsed.total,
+      calories: Math.round(parsed.total.calories || 0),
+    },
+  };
 }
