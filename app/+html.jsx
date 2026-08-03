@@ -17,6 +17,10 @@ export default function Root({ children }) {
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/logo.png" />
         <link rel="apple-touch-icon" href="/icon.png" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/ionicons@6/dist/ionicons.min.css"
+        />
         <ScrollViewStyleReset />
       </head>
       <body>{children}</body>
