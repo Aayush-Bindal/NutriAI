@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { getLatestApkUrl } from "../utils/getApkUrl";
 
@@ -60,24 +60,27 @@ export default function WebPlatformPrompt() {
   };
 
   return (
-    <View style={styles.overlay}>
-      <View style={styles.card}>
-        <TouchableOpacity style={styles.closeBtn} onPress={handleDismiss}>
-          <Ionicons name="close-circle" size={24} color="#888" />
-        </TouchableOpacity>
-
-        <Text style={styles.icon}>
-          {isAndroid() ? "🤖" : "📱"}
-        </Text>
-
-        <Text style={styles.title}>
-          {isAndroid() ? "Get NutriAI on Android" : "Install NutriAI"}
-        </Text>
+    <View style={styles.banner}>
+      <View style={styles.inner}>
+        <View style={styles.row}>
+          <Ionicons
+            name={isAndroid() ? "download-outline" : "phone-portrait-outline"}
+            size={20}
+            color="#295e42"
+          />
+          <Text style={styles.title}>
+            {isAndroid() ? "Download APK" : "Install NutriAI"}
+          </Text>
+          <TouchableOpacity onPress={handleDismiss} style={styles.closeBtn}>
+            <Ionicons name="close" size={18} color="#888" />
+          </TouchableOpacity>
+        </View>
 
         {isAndroid() ? (
           <>
             <Text style={styles.body}>
-              Download the APK and install it directly on your Android device.
+              Install the APK directly on your Android device for the full app
+              experience.
             </Text>
             <TouchableOpacity
               style={styles.primaryBtn}
@@ -89,16 +92,16 @@ export default function WebPlatformPrompt() {
                 {loading ? "Loading..." : "Download APK"}
               </Text>
             </TouchableOpacity>
-            {apkUrl && (
-              <TouchableOpacity onPress={handleDownload}>
-                <Text style={styles.link}>Or copy download link</Text>
-              </TouchableOpacity>
-            )}
           </>
         ) : (
           <>
             <Text style={styles.body}>
               Add NutriAI to your Home Screen for a full app experience.
+            </Text>
+            <Text style={styles.warning}>
+              Your Gemini API key is stored in browser storage and is not as
+              secure as the device secure enclave on mobile. Only use this on
+              devices you trust.
             </Text>
             <View style={styles.instructions}>
               <Text style={styles.step}>
@@ -112,7 +115,10 @@ export default function WebPlatformPrompt() {
                 3. Tap <Text style={styles.bold}>Add</Text>
               </Text>
             </View>
-            <TouchableOpacity style={styles.primaryBtn} onPress={handleDismiss}>
+            <TouchableOpacity
+              style={styles.primaryBtn}
+              onPress={handleDismiss}
+            >
               <Text style={styles.primaryBtnText}>Got it</Text>
             </TouchableOpacity>
           </>
@@ -123,87 +129,82 @@ export default function WebPlatformPrompt() {
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  banner: {
     position: "absolute",
-    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
     zIndex: 1000,
-    padding: 20,
-  },
-  card: {
-    width: "100%",
-    maxWidth: 380,
     backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 24,
-    alignItems: "center",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 12,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
   },
-  closeBtn: {
-    position: "absolute",
-    top: 12,
-    right: 12,
-    padding: 4,
+  inner: {
+    maxWidth: 480,
+    alignSelf: "center",
+    width: "100%",
   },
-  icon: {
-    fontSize: 48,
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   title: {
-    fontSize: 20,
-    fontWeight: "900",
+    flex: 1,
+    fontSize: 15,
+    fontWeight: "700",
     color: "#123020",
-    textAlign: "center",
-    marginBottom: 8,
+    marginLeft: 8,
+  },
+  closeBtn: {
+    padding: 4,
   },
   body: {
-    fontSize: 15,
+    fontSize: 13,
     color: "#557062",
-    textAlign: "center",
-    lineHeight: 22,
-    marginBottom: 16,
+    lineHeight: 19,
+    marginBottom: 10,
+  },
+  warning: {
+    fontSize: 12,
+    color: "#b45309",
+    backgroundColor: "#FEF3C7",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    lineHeight: 17,
   },
   primaryBtn: {
     backgroundColor: "#295e42",
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    borderRadius: 10,
+    paddingVertical: 12,
     alignItems: "center",
     width: "100%",
   },
   primaryBtnText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
   },
-  link: {
-    marginTop: 12,
-    color: "#295e42",
-    fontSize: 14,
-    fontWeight: "600",
-    textDecorationLine: "underline",
-  },
   instructions: {
-    width: "100%",
     backgroundColor: "#F0F4F2",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
   },
   step: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#123020",
-    lineHeight: 22,
-    marginBottom: 4,
+    lineHeight: 20,
+    marginBottom: 2,
   },
   bold: {
     fontWeight: "700",
