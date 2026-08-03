@@ -10,6 +10,7 @@ export default function NutritionResult({
   mealType,
   added,
   onAdd,
+  onReanalyse,
   onSaveMeal,
   isMealSaved,
 }) {
@@ -90,6 +91,16 @@ export default function NutritionResult({
           <Text style={s.savedTxt}>Saved to Quick Meals</Text>
         </View>
       )}
+
+      {/* Re-analyse btn */}
+      <TouchableOpacity
+        style={s.reanalyseBtn}
+        onPress={onReanalyse}
+        disabled={added}
+        activeOpacity={0.85}
+      >
+        <Text style={s.reanalyseTxt}>Re-analyse</Text>
+      </TouchableOpacity>
 
       {/* Add btn */}
       <TouchableOpacity
@@ -173,6 +184,17 @@ const createStyles = (COLORS) => StyleSheet.create({
   },
   addBtnDone: { backgroundColor: COLORS.green },
   addTxt: { color: COLORS.white, fontSize: rf(16), fontWeight: "700" },
+  reanalyseBtn: {
+    margin: rs(14),
+    marginBottom: rs(8),
+    borderRadius: rs(16),
+    paddingVertical: rs(14),
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: COLORS.border,
+    backgroundColor: COLORS.cardAlt,
+  },
+  reanalyseTxt: { color: COLORS.mid, fontSize: rf(14), fontWeight: "700" },
   saveBtn: {
     margin: rs(14),
     marginBottom: rs(8),

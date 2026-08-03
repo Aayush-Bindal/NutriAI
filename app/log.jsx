@@ -96,6 +96,12 @@ export default function LogScreen() {
     setTimeout(() => router.back(), 700);
   };
 
+  const reanalyse = () => {
+    if (loading || !result) return;
+    Keyboard.dismiss();
+    analyse();
+  };
+
   const selectSavedMeal = (meal) => {
     Keyboard.dismiss();
     setInput(meal.label);
@@ -244,6 +250,7 @@ export default function LogScreen() {
             mealType={mealType}
             added={added}
             onAdd={addToDiary}
+            onReanalyse={reanalyse}
             onSaveMeal={() => saveMealWithData(input.trim(), result)}
             isMealSaved={savedMeals.some(
               (m) => m.label.toLowerCase() === input.trim().toLowerCase(),
