@@ -11,9 +11,15 @@ import {
 import { Appearance, useColorScheme } from "react-native";
 import { DARK_COLORS, LIGHT_COLORS, makeShadow } from "../constants/theme";
 import { configureHaptics } from "../utils/haptics";
+import {
+  disableMealReminders,
+  enableMealReminders,
+} from "../utils/mealNotifications";
 
 const THEME_STORAGE_KEY = "nutriai_theme_mode";
 const HAPTICS_STORAGE_KEY = "nutriai_haptics_enabled";
+const NOTIFICATIONS_STORAGE_KEY = "nutriai_notifications_enabled";
+const NOTIFICATION_PERMISSION_ASKED_KEY = "nutriai_notification_permission_asked";
 const THEME_MODES = ["system", "light", "dark"];
 
 const ThemeContext = createContext(null);
@@ -22,16 +28,29 @@ export function ThemeProvider({ children }) {
   const systemScheme = useColorScheme();
   const [mode, setModeState] = useState("system");
   const [hapticsEnabled, setHapticsEnabledState] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabledState] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.multiGet([THEME_STORAGE_KEY, HAPTICS_STORAGE_KEY])
-      .then((entries) => {
+    AsyncStorage.multiGet([
+      THEME_STORAGE_KEY,
+      HAPTICS_STORAGE_KEY,
+      NOTIFICATIONS_STORAGE_KEY,
+      NOTIFICATION_PERMISSION_ASKED_KEY,
+    ])
+      .then(async (entries) => {
         const storedMode = entries.find(([key]) => key === THEME_STORAGE_KEY)?.[1];
         const storedHaptics = entries.find(
           ([key]) => key === HAPTICS_STORAGE_KEY,
         )?.[1];
+        const storedNotifications = entries.find(
+          ([key]) => key === NOTIFICATIONS_STORAGE_KEY,
+        )?.[1];
+        const permissionWasAsked = entries.find(
+          ([key]) => key === NOTIFICATION_PERMISSION_ASKED_KEY,
+        )?.[1] === "true";
         const nextHapticsEnabled = storedHaptics !== "false";
+        const nextNotificationsEnabled = storedNotifications === "true";
 
         if (THEME_MODES.includes(storedMode)) {
           setModeState(storedMode);
@@ -39,9 +58,48 @@ export function ThemeProvider({ children }) {
 
         setHapticsEnabledState(nextHapticsEnabled);
         configureHaptics(nextHapticsEnabled);
+
+        // Ask once on the first launch. A granted permission also opts the
+        // user into the four gentle meal reminders immediately.
+        if (!permissionWasAsked && storedNotifications == null) {
+          const enabled = await enableMealReminders().catch((error) => {
+            console.warn("Notification permission error:", error);
+            return false;
+          });
+          setNotificationsEnabledState(enabled);
+          await AsyncStorage.multiSet([
+            [NOTIFICATION_PERMISSION_ASKED_KEY, "true"],
+            [NOTIFICATIONS_STORAGE_KEY, String(enabled)],
+          ]);
+        } else {
+          setNotificationsEnabledState(nextNotificationsEnabled);
+        }
+
+        if (
+          nextNotificationsEnabled &&
+          (permissionWasAsked || storedNotifications != null)
+        ) {
+          enableMealReminders().catch(console.warn);
+        }
       })
       .catch(console.warn)
       .finally(() => setLoaded(true));
+  }, []);
+
+  const setNotificationsEnabled = useCallback(async (nextEnabled) => {
+    if (nextEnabled) {
+      const enabled = await enableMealReminders();
+      if (!enabled) return false;
+    } else {
+      await disableMealReminders();
+    }
+
+    setNotificationsEnabledState(nextEnabled);
+    AsyncStorage.setItem(
+      NOTIFICATIONS_STORAGE_KEY,
+      String(nextEnabled),
+    ).catch(console.warn);
+    return true;
   }, []);
 
   useEffect(() => {
@@ -83,6 +141,8 @@ export function ThemeProvider({ children }) {
       setMode,
       hapticsEnabled,
       setHapticsEnabled,
+      notificationsEnabled,
+      setNotificationsEnabled,
       colors,
       shadow,
       statusBarStyle: resolvedMode === "dark" ? "light" : "dark",
@@ -93,6 +153,7 @@ export function ThemeProvider({ children }) {
       mode,
       resolvedMode,
       setHapticsEnabled,
+      setNotificationsEnabled,
       setMode,
       shadow,
     ],

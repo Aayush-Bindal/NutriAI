@@ -40,6 +40,8 @@ export default function ProfileScreen() {
     setMode,
     hapticsEnabled,
     setHapticsEnabled,
+    notificationsEnabled,
+    setNotificationsEnabled,
   } = useTheme();
   const s = useThemedStyles(createStyles);
   const isDark = resolvedMode === "dark";
@@ -399,6 +401,34 @@ export default function ProfileScreen() {
               }}
             >
               <View style={[s.prefThumb, hapticsEnabled && s.prefThumbOn]} />
+            </TouchableOpacity>
+          </View>
+          <View style={s.prefRow}>
+            <View style={s.prefCopy}>
+              <Text style={s.prefTitle}>Meal reminders</Text>
+              <Text style={s.prefHint}>
+                Gentle reminders at breakfast, lunch, snack, and dinner
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={[s.prefToggle, notificationsEnabled && s.prefToggleOn]}
+              activeOpacity={0.85}
+              accessibilityRole="switch"
+              accessibilityLabel="Meal reminders"
+              accessibilityState={{ checked: notificationsEnabled }}
+              onPress={async () => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                const enabled = await setNotificationsEnabled(
+                  !notificationsEnabled,
+                );
+                if (enabled && !notificationsEnabled) {
+                  Haptics.selectionAsync();
+                }
+              }}
+            >
+              <View
+                style={[s.prefThumb, notificationsEnabled && s.prefThumbOn]}
+              />
             </TouchableOpacity>
           </View>
         </View>
