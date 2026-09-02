@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as DocumentPicker from "expo-document-picker";
+import { File } from "expo-file-system";
 import * as FileSystem from "expo-file-system/legacy";
 import * as SecureStore from "expo-secure-store";
 import * as Sharing from "expo-sharing";
@@ -254,11 +255,18 @@ export function ProfileProvider({ children }) {
 
   const restoreFromBackup = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({ type: "application/json", copyToCacheDirectory: true });
+      // Keep the provider URI so Android's temporary document permission is
+      // preserved. The SDK 57 cache-copy URI can be returned unreadable.
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: false,
+      });
       if (result.canceled) return { success: false, canceled: true };
 
       const file = result.assets[0];
-      const raw = await FileSystem.readAsStringAsync(file.uri);
+      // Expo SDK 57's File API correctly handles the Android DocumentPicker
+      // cache URI. The legacy bridge can report this same URI as unreadable.
+      const raw = await new File(file.uri).text();
       const parsed = JSON.parse(raw);
 
       if (!parsed.data) {
