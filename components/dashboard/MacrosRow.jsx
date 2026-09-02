@@ -46,7 +46,7 @@ export default function MacrosRow({ totals, macroGoals }) {
         >
           <Text style={s.macroLbl}>{m.label}</Text>
           <Text style={[s.macroVal, { color: m.color }]}>
-            {m.value}
+            {Math.round(Number(m.value) || 0)}
             <Text style={s.macroG}>g</Text>
           </Text>
           <Text style={s.macroMax}>/ {m.max}g</Text>
@@ -67,41 +67,42 @@ export default function MacrosRow({ totals, macroGoals }) {
   );
 }
 
-const createStyles = (COLORS) => StyleSheet.create({
-  macroGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: rs(12),
-    marginBottom: rs(20),
-  },
-  macroCard: {
-    width: "47%",
-    flexGrow: 1,
-    borderRadius: rs(24),
-    padding: rs(16),
-  },
-  macroLbl: {
-    fontSize: rf(11),
-    fontWeight: "800",
-    color: COLORS.muted,
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: rs(6),
-  },
-  macroVal: { fontSize: rf(24), fontWeight: "900", letterSpacing: -0.5 },
-  macroG: { fontSize: rf(14), fontWeight: "600" },
-  macroMax: {
-    fontSize: rf(11),
-    color: COLORS.muted,
-    fontWeight: "500",
-    marginTop: rs(2),
-    marginBottom: rs(12),
-  },
-  macroBar: {
-    height: rs(6),
-    backgroundColor: COLORS.barTrack,
-    borderRadius: rs(99),
-    overflow: "hidden",
-  },
-  macroFill: { height: "100%", borderRadius: rs(99) },
-});
+const createStyles = (COLORS) =>
+  StyleSheet.create({
+    macroGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: rs(12),
+      marginBottom: rs(20),
+    },
+    macroCard: {
+      width: "47%",
+      flexGrow: 1,
+      borderRadius: rs(24),
+      padding: rs(16),
+    },
+    macroLbl: {
+      fontSize: rf(11),
+      fontWeight: "800",
+      color: COLORS.muted,
+      textTransform: "uppercase",
+      letterSpacing: 0.5,
+      marginBottom: rs(6),
+    },
+    macroVal: { fontSize: rf(24), fontWeight: "900", letterSpacing: -0.5 },
+    macroG: { fontSize: rf(14), fontWeight: "600" },
+    macroMax: {
+      fontSize: rf(11),
+      color: COLORS.muted,
+      fontWeight: "500",
+      marginTop: rs(2),
+      marginBottom: rs(12),
+    },
+    macroBar: {
+      height: rs(6),
+      backgroundColor: COLORS.barTrack,
+      borderRadius: rs(99),
+      overflow: "hidden",
+    },
+    macroFill: { height: "100%", borderRadius: rs(99) },
+  });

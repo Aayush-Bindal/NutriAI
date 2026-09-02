@@ -1,7 +1,7 @@
 const MODELS = [
-  "gemini-flash-lite-latest", // 1. Primary: Fastest, auto-updates to the latest Lite model 
-  "gemini-flash-latest",      // 2. Fallback: Auto-updates to the latest standard Flash 
-  "gemini-pro-latest",        // 3. Pro model: Auto-updates to the latest Pro version 
+  "gemini-flash-lite-latest", // 1. Primary: Fastest, auto-updates to the latest Lite model
+  "gemini-flash-latest", // 2. Fallback: Auto-updates to the latest standard Flash
+  "gemini-pro-latest", // 3. Pro model: Auto-updates to the latest Pro version
 ];
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const FETCH_TIMEOUT = 15_000;
@@ -74,8 +74,10 @@ async function callGeminiWithFallback(apiKey, parts) {
       return await callGemini(model, apiKey, parts);
     } catch (error) {
       lastError = error;
-      console.warn(`${model} failed: ${error.message}. Trying next fallback...`);
-      
+      console.warn(
+        `${model} failed: ${error.message}. Trying next fallback...`,
+      );
+
       // If the error is related to an invalid API key, throw immediately
       // instead of trying all other models which will also fail
       const errMsg = error.message.toLowerCase();
@@ -88,7 +90,9 @@ async function callGeminiWithFallback(apiKey, parts) {
   if (lastError?.name === "AbortError") {
     throw new Error("Request timed out. Check your connection.");
   }
-  throw new Error("All AI models are currently busy. Please try again in a few seconds.");
+  throw new Error(
+    "All AI models are currently busy. Please try again in a few seconds.",
+  );
 }
 
 async function callGemini(model, apiKey, parts) {
@@ -96,9 +100,9 @@ async function callGemini(model, apiKey, parts) {
 
   const body = {
     contents: [{ parts }],
-    generationConfig: { 
+    generationConfig: {
       response_mime_type: "application/json",
-      temperature: 0.1
+      temperature: 0.1,
     },
   };
 
@@ -130,7 +134,12 @@ export async function logMeal(userInput, apiKey) {
   return await callGeminiWithFallback(apiKey, parts);
 }
 
-export async function logMealFromImage(base64Image, mimeType, apiKey, contextText = "") {
+export async function logMealFromImage(
+  base64Image,
+  mimeType,
+  apiKey,
+  contextText = "",
+) {
   if (!apiKey) throw new Error("no_api_key");
   if (!base64Image) throw new Error("no_image");
 
@@ -181,9 +190,20 @@ function parseGeminiResponse(data) {
 
   return {
     ...parsed,
-    total: {
-      ...parsed.total,
-      calories: Math.round(parsed.total.calories || 0),
-    },
+    items: parsed.items.map((item) => normalizeNutrition(item)),
+    total: normalizeNutrition(parsed.total),
+  };
+}
+
+function normalizeNutrition(nutrition) {
+  const macro = (value) => Number((Number(value) || 0).toFixed(1));
+
+  return {
+    ...nutrition,
+    calories: Math.round(Number(nutrition.calories) || 0),
+    protein: macro(nutrition.protein),
+    carbs: macro(nutrition.carbs),
+    fat: macro(nutrition.fat),
+    fiber: macro(nutrition.fiber),
   };
 }
