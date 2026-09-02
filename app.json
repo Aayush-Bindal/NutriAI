@@ -2,7 +2,7 @@
   "expo": {
     "name": "NutriAI",
     "slug": "nutriai",
-    "version": "1.2.3",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "nutriai",
@@ -51,7 +51,8 @@
       "expo-image",
       "expo-secure-store",
       "expo-sharing",
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true,
