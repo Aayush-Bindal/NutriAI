@@ -47,7 +47,9 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
 
-    Appearance.setColorScheme(mode === "system" ? null : mode);
+    // RN 0.86's Android implementation does not accept null here. Use the
+    // explicit value that tells native code to follow the system preference.
+    Appearance.setColorScheme(mode === "system" ? "unspecified" : mode);
   }, [loaded, mode]);
 
   const setMode = useCallback((nextMode) => {

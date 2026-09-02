@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   LayoutAnimation,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -244,7 +243,7 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={{ height: Platform.OS === "ios" ? rs(40) : rs(30) }} />
+        <View style={{ height: rs(26) }} />
 
         {/* Handle */}
         <View style={s.handle} />
