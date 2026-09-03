@@ -87,20 +87,30 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const setNotificationsEnabled = useCallback(async (nextEnabled) => {
-    if (nextEnabled) {
-      const enabled = await enableMealReminders();
-      if (!enabled) return false;
-    } else {
-      await disableMealReminders();
-    }
-
+    const previousValue = notificationsEnabled;
+    // Update the switch immediately while the native permission/scheduling
+    // work completes, then roll it back if the operation fails.
     setNotificationsEnabledState(nextEnabled);
-    AsyncStorage.setItem(
-      NOTIFICATIONS_STORAGE_KEY,
-      String(nextEnabled),
-    ).catch(console.warn);
-    return true;
-  }, []);
+
+    try {
+      if (nextEnabled) {
+        const enabled = await enableMealReminders();
+        if (!enabled) throw new Error("Notification permission was denied");
+      } else {
+        await disableMealReminders();
+      }
+
+      AsyncStorage.setItem(
+        NOTIFICATIONS_STORAGE_KEY,
+        String(nextEnabled),
+      ).catch(console.warn);
+      return true;
+    } catch (error) {
+      setNotificationsEnabledState(previousValue);
+      console.warn("Could not update meal reminders:", error);
+      return false;
+    }
+  }, [notificationsEnabled]);
 
   useEffect(() => {
     if (!loaded) return;
