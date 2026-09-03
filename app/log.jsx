@@ -58,6 +58,7 @@ export default function LogScreen() {
   const [error, setError] = useState(null);
   const [added, setAdded] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [analysisImage, setAnalysisImage] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -109,12 +110,17 @@ export default function LogScreen() {
   const reanalyse = () => {
     if (loading || !result) return;
     Keyboard.dismiss();
-    analyse();
+    if (analysisImage?.base64) {
+      analyseFoodImage(analysisImage);
+    } else {
+      analyse();
+    }
   };
 
   const selectSavedMeal = (meal) => {
     Keyboard.dismiss();
     setInput(meal.label);
+    setAnalysisImage(null);
     setResult(meal.data);
     setError(null);
     setAdded(false);
@@ -122,6 +128,11 @@ export default function LogScreen() {
 
   const analyseFoodImage = async (image) => {
     if (!image?.base64) return;
+
+    setAnalysisImage({
+      base64: image.base64,
+      mimeType: image.mimeType || "image/jpeg",
+    });
 
     setLoading(true);
     setError(null);
@@ -215,6 +226,10 @@ export default function LogScreen() {
     });
 
     if (!result.canceled && result.assets[0].base64) {
+      setAnalysisImage({
+        base64: result.assets[0].base64,
+        mimeType: result.assets[0].mimeType || "image/jpeg",
+      });
       setLoading(true);
       setError(null);
       setResult(null);
