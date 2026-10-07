@@ -181,9 +181,20 @@ function parseGeminiResponse(data) {
 
   return {
     ...parsed,
-    total: {
-      ...parsed.total,
-      calories: Math.round(parsed.total.calories || 0),
-    },
+    items: parsed.items.map((item) => normalizeNutrition(item)),
+    total: normalizeNutrition(parsed.total),
+  };
+}
+
+function normalizeNutrition(nutrition) {
+  const macro = (value) => Number((Number(value) || 0).toFixed(1));
+
+  return {
+    ...nutrition,
+    calories: Math.round(Number(nutrition.calories) || 0),
+    protein: macro(nutrition.protein),
+    carbs: macro(nutrition.carbs),
+    fat: macro(nutrition.fat),
+    fiber: macro(nutrition.fiber),
   };
 }

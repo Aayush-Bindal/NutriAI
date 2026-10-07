@@ -1,9 +1,9 @@
-export async function pickImageFromCamera() {
+function pickImage({ capture = false } = {}) {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
-    input.capture = "environment";
+    if (capture) input.capture = "environment";
     input.style.display = "none";
 
     input.onchange = () => {
@@ -31,4 +31,12 @@ export async function pickImageFromCamera() {
     document.body.appendChild(input);
     input.click();
   });
+}
+
+export function pickImageFromCamera() {
+  return pickImage({ capture: true });
+}
+
+export function pickImageFromLibrary() {
+  return pickImage();
 }

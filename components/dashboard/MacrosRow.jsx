@@ -46,7 +46,7 @@ export default function MacrosRow({ totals, macroGoals }) {
         >
           <Text style={s.macroLbl}>{m.label}</Text>
           <Text style={[s.macroVal, { color: m.color }]}>
-            {m.value}
+              {Math.round(Number(m.value) || 0)}
             <Text style={s.macroG}>g</Text>
           </Text>
           <Text style={s.macroMax}>/ {m.max}g</Text>

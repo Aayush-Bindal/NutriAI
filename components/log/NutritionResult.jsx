@@ -42,7 +42,9 @@ export default function NutritionResult({
             <Text style={s.itemName}>{item.name}</Text>
             <Text style={s.itemQty}>{item.quantity}</Text>
           </View>
-          <Text style={s.itemCal}>{item.calories} cal</Text>
+          <Text style={s.itemCal}>
+            {Math.round(Number(item.calories) || 0)} cal
+          </Text>
         </View>
       ))}
 
@@ -50,10 +52,26 @@ export default function NutritionResult({
       <View style={s.macroStrip}>
         {[
           { v: result.total.calories, l: "kcal", c: COLORS.red },
-          { v: `${result.total.protein}g`, l: "protein", c: COLORS.blue },
-          { v: `${result.total.carbs}g`, l: "carbs", c: COLORS.amber },
-          { v: `${result.total.fat}g`, l: "fat", c: COLORS.purple },
-          { v: `${result.total.fiber || 0}g`, l: "fiber", c: COLORS.green },
+          {
+            v: `${Math.round(Number(result.total.protein) || 0)}g`,
+            l: "protein",
+            c: COLORS.blue,
+          },
+          {
+            v: `${Math.round(Number(result.total.carbs) || 0)}g`,
+            l: "carbs",
+            c: COLORS.amber,
+          },
+          {
+            v: `${Math.round(Number(result.total.fat) || 0)}g`,
+            l: "fat",
+            c: COLORS.purple,
+          },
+          {
+            v: `${Math.round(Number(result.total.fiber) || 0)}g`,
+            l: "fiber",
+            c: COLORS.green,
+          },
         ].map((m, i, arr) => (
           <View
             key={m.l}

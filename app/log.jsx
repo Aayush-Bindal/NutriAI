@@ -1,15 +1,15 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Keyboard,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import FoodInput from "../components/log/FoodInput";
 import MealTypeSelector from "../components/log/MealTypeSelector";
 import NutritionResult from "../components/log/NutritionResult";
@@ -19,7 +19,10 @@ import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
 import * as Haptics from "../utils/haptics";
-import { pickImageFromCamera } from "../utils/imageInput";
+import {
+    pickImageFromCamera,
+    pickImageFromLibrary,
+} from "../utils/imageInput";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
@@ -48,6 +51,7 @@ export default function LogScreen() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [added, setAdded] = useState(false);
+  const [analysisImage, setAnalysisImage] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -99,15 +103,50 @@ export default function LogScreen() {
   const reanalyse = () => {
     if (loading || !result) return;
     Keyboard.dismiss();
-    analyse();
+    if (analysisImage?.base64) {
+      analyseFoodImage(analysisImage);
+    } else {
+      analyse();
+    }
   };
 
   const selectSavedMeal = (meal) => {
     Keyboard.dismiss();
     setInput(meal.label);
+    setAnalysisImage(null);
     setResult(meal.data);
     setError(null);
     setAdded(false);
+  };
+
+  const analyseFoodImage = async (image) => {
+    if (!image?.base64 || loading) return;
+
+    setAnalysisImage({
+      base64: image.base64,
+      mimeType: image.mimeType || "image/jpeg",
+    });
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setAdded(false);
+
+    try {
+      const data = await logMealFromImage(
+        image.base64,
+        image.mimeType || "image/jpeg",
+        profile.apiKey,
+        input.trim(),
+      );
+      if (data.error) setError("That doesn't look like food. Try again!");
+      else {
+        setResult(data);
+        if (!input.trim()) setInput("Analyzed from picture");
+      }
+    } catch (e) {
+      setError(`Error: ${e.message}`);
+    }
+    setLoading(false);
   };
 
   const handleCameraPress = async () => {
@@ -124,27 +163,21 @@ export default function LogScreen() {
       return;
     }
 
-    if (!image.canceled && image.base64) {
-      setLoading(true);
-      setError(null);
-      setResult(null);
-      setAdded(false);
-      
-      try {
-        const data = await logMealFromImage(image.base64, image.mimeType, profile.apiKey, input.trim());
-        
-        if (data.error) setError("That doesn't look like food. Try again!");
-        else {
-          setResult(data);
-          if (!input.trim()) {
-            setInput("Analyzed from picture");
-          }
-        }
-      } catch (e) {
-        setError(`Error: ${e.message}`);
-      }
-      setLoading(false);
+    await analyseFoodImage(image);
+  };
+
+  const handleLibraryPress = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    if (!profile.apiKey) {
+      setError(
+        "No API key found. Tap your profile icon to add your Gemini API key.",
+      );
+      return;
     }
+
+    const image = await pickImageFromLibrary();
+    await analyseFoodImage(image);
   };
 
   const handleLabelPress = async () => {
@@ -243,7 +276,7 @@ export default function LogScreen() {
         )}
       </ScrollView>
 
-      {(!loading && !result) && (
+      {!loading && !result && (
         <>
           <TouchableOpacity 
             style={[s.miniFab, { bottom: insets.bottom + rs(105) }]} 
@@ -251,6 +284,14 @@ export default function LogScreen() {
             activeOpacity={0.8}
           >
             <Ionicons name="document-text" size={rf(20)} color={COLORS.white} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[s.libraryFab, { bottom: insets.bottom + rs(158) }]}
+            onPress={handleLibraryPress}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="images" size={rf(20)} color={COLORS.white} />
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -333,6 +374,18 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
     zIndex: 10,
   },
   miniFab: {
+    position: "absolute",
+    right: rs(28),
+    width: rs(44),
+    height: rs(44),
+    borderRadius: rs(22),
+    backgroundColor: COLORS.greenMutedDark,
+    justifyContent: "center",
+    alignItems: "center",
+    ...SHADOW.md,
+    zIndex: 10,
+  },
+  libraryFab: {
     position: "absolute",
     right: rs(28),
     width: rs(44),

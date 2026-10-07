@@ -13,7 +13,10 @@ export default function MealSection({ title, items = [] }) {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   if (!items.length) return null;
-  const total = items.reduce((s, i) => s + i.calories, 0);
+  const total = items.reduce(
+    (sum, item) => sum + (Number(item.calories) || 0),
+    0,
+  );
 
   const confirmDelete = () => {
     if (deleteTarget) {
@@ -27,7 +30,7 @@ export default function MealSection({ title, items = [] }) {
     <View style={[s.card, SHADOW.sm]}>
       <View style={s.head}>
         <Text style={s.title}>{title}</Text>
-        <Text style={s.cal}>{total} cal</Text>
+          <Text style={s.cal}>{Math.round(total)} cal</Text>
       </View>
       {items.map((item, i) => (
         <View key={i} style={[s.row, i < items.length - 1 && s.border]}>
@@ -36,7 +39,9 @@ export default function MealSection({ title, items = [] }) {
             <Text style={s.name}>{item.name}</Text>
             <Text style={s.qty}>{item.quantity}</Text>
           </View>
-          <Text style={s.itemCal}>{item.calories}</Text>
+          <Text style={s.itemCal}>
+            {Math.round(Number(item.calories) || 0)}
+          </Text>
           <TouchableOpacity
             onPress={() => setDeleteTarget({ name: item.name, index: i })}
             hitSlop={8}

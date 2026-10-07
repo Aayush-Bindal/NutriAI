@@ -20,3 +20,19 @@ export async function pickImageFromCamera() {
     mimeType: result.assets[0].mimeType || "image/jpeg",
   };
 }
+
+export async function pickImageFromLibrary() {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ["images"],
+    allowsEditing: false,
+    quality: 0.5,
+    base64: true,
+  });
+
+  if (result.canceled || !result.assets?.[0]?.base64) return { canceled: true };
+
+  return {
+    base64: result.assets[0].base64,
+    mimeType: result.assets[0].mimeType || "image/jpeg",
+  };
+}
