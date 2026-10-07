@@ -3,7 +3,6 @@ import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
   Keyboard,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -20,10 +19,7 @@ import { useMeals } from "../context/MealContext";
 import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
 import * as Haptics from "../utils/haptics";
-import {
-  pickImageFromCamera,
-  pickImageFromLibrary,
-} from "../utils/imageInput";
+import { pickImageFromLibrary } from "../utils/imageInput";
 
 function getDefaultMeal() {
   const h = new Date().getHours();
@@ -34,7 +30,7 @@ function getDefaultMeal() {
 
 export default function LogScreen() {
   const router = useRouter();
-  const { colors: COLORS, shadow: SHADOW } = useTheme();
+  const { colors: COLORS } = useTheme();
   const s = useThemedStyles(createStyles);
   const {
     addMeal,
@@ -53,7 +49,6 @@ export default function LogScreen() {
   const [error, setError] = useState(null);
   const [added, setAdded] = useState(false);
   const [analysisImage, setAnalysisImage] = useState(null);
-  const [sourcePickerMode, setSourcePickerMode] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -177,37 +172,26 @@ export default function LogScreen() {
     setLoading(false);
   };
 
-  const handleSourceChoice = async (source) => {
-    const mode = sourcePickerMode;
-    setSourcePickerMode(null);
-    const image = source === "camera"
-      ? await pickImageFromCamera()
-      : await pickImageFromLibrary();
-
-    if (image.error === "permission") {
-      setError(
-        mode === "label"
-          ? "Camera access is required to scan labels."
-          : "Camera access is required to take pictures of your food.",
-      );
-      return;
-    }
-
-    if (mode === "label") {
-      await scanFoodLabel(image);
-    } else {
-      await analyseFoodImage(image);
-    }
-  };
-
-  const openSourcePicker = (mode) => {
+  const handleFoodImagePress = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     if (!profile.apiKey) {
       setError("No API key found. Tap your profile icon to add your Gemini API key.");
       return;
     }
-    setSourcePickerMode(mode);
+
+    await analyseFoodImage(await pickImageFromLibrary());
+  };
+
+  const handleLabelPress = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+    if (!profile.apiKey) {
+      setError("No API key found. Tap your profile icon to add your Gemini API key.");
+      return;
+    }
+
+    await scanFoodLabel(await pickImageFromLibrary());
   };
 
   return (
@@ -273,7 +257,7 @@ export default function LogScreen() {
         <>
           <TouchableOpacity 
             style={[s.miniFab, { bottom: insets.bottom + rs(105) }]} 
-            onPress={() => openSourcePicker("label")} 
+            onPress={handleLabelPress}
             activeOpacity={0.8}
           >
             <Ionicons name="document-text" size={rf(20)} color={COLORS.white} />
@@ -281,7 +265,7 @@ export default function LogScreen() {
 
           <TouchableOpacity 
             style={[s.fab, { bottom: insets.bottom + rs(30) }]} 
-            onPress={() => openSourcePicker("food")} 
+            onPress={handleFoodImagePress}
             activeOpacity={0.8}
           >
             <Ionicons name="camera" size={rf(26)} color={COLORS.white} />
@@ -289,44 +273,6 @@ export default function LogScreen() {
         </>
       )}
 
-      <Modal
-        visible={!!sourcePickerMode}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setSourcePickerMode(null)}
-      >
-        <View style={s.sourceOverlay}>
-          <View style={[s.sourceCard, SHADOW.md]}>
-            <Text style={s.sourceTitle}>
-              {sourcePickerMode === "label" ? "Scan a label" : "Add a food photo"}
-            </Text>
-            <Text style={s.sourceSubtitle}>Choose how to add your image</Text>
-            <TouchableOpacity
-              style={s.sourceOption}
-              onPress={() => handleSourceChoice("camera")}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="camera-outline" size={rf(22)} color={COLORS.green} />
-              <Text style={s.sourceOptionText}>Take photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.sourceOption}
-              onPress={() => handleSourceChoice("library")}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="images-outline" size={rf(22)} color={COLORS.green} />
-              <Text style={s.sourceOptionText}>Choose from library</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={s.sourceCancel}
-              onPress={() => setSourcePickerMode(null)}
-              activeOpacity={0.8}
-            >
-              <Text style={s.sourceCancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -408,54 +354,5 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
     alignItems: "center",
     ...SHADOW.md,
     zIndex: 10,
-  },
-  sourceOverlay: {
-    flex: 1,
-    justifyContent: "flex-end",
-    backgroundColor: COLORS.darkScrim,
-    padding: rs(16),
-  },
-  sourceCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: rs(24),
-    padding: rs(20),
-    marginBottom: rs(8),
-  },
-  sourceTitle: {
-    color: COLORS.dark,
-    fontSize: rf(18),
-    fontWeight: "800",
-    textAlign: "center",
-  },
-  sourceSubtitle: {
-    color: COLORS.muted,
-    fontSize: rf(13),
-    marginTop: rs(4),
-    marginBottom: rs(14),
-    textAlign: "center",
-  },
-  sourceOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.cardAlt,
-    borderRadius: rs(14),
-    gap: rs(12),
-    padding: rs(15),
-    marginTop: rs(8),
-  },
-  sourceOptionText: {
-    color: COLORS.dark,
-    fontSize: rf(15),
-    fontWeight: "700",
-  },
-  sourceCancel: {
-    alignItems: "center",
-    paddingVertical: rs(14),
-    marginTop: rs(4),
-  },
-  sourceCancelText: {
-    color: COLORS.muted,
-    fontSize: rf(14),
-    fontWeight: "700",
   },
 });
