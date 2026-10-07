@@ -2,12 +2,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
-    Keyboard,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Keyboard,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FoodInput from "../components/log/FoodInput";
@@ -20,8 +21,8 @@ import { useProfile } from "../context/ProfileContext";
 import { useTheme, useThemedStyles } from "../context/ThemeContext";
 import * as Haptics from "../utils/haptics";
 import {
-    pickImageFromCamera,
-    pickImageFromLibrary,
+  pickImageFromCamera,
+  pickImageFromLibrary,
 } from "../utils/imageInput";
 
 function getDefaultMeal() {
@@ -33,7 +34,7 @@ function getDefaultMeal() {
 
 export default function LogScreen() {
   const router = useRouter();
-  const { colors: COLORS } = useTheme();
+  const { colors: COLORS, shadow: SHADOW } = useTheme();
   const s = useThemedStyles(createStyles);
   const {
     addMeal,
@@ -52,6 +53,7 @@ export default function LogScreen() {
   const [error, setError] = useState(null);
   const [added, setAdded] = useState(false);
   const [analysisImage, setAnalysisImage] = useState(null);
+  const [sourcePickerMode, setSourcePickerMode] = useState(null);
 
   useFocusEffect(
     useCallback(() => {
@@ -149,72 +151,63 @@ export default function LogScreen() {
     setLoading(false);
   };
 
-  const handleCameraPress = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const scanFoodLabel = async (image) => {
+    if (!image?.base64 || loading) return;
 
-    if (!profile.apiKey) {
-      setError("No API key found. Tap your profile icon to add your Gemini API key.");
-      return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setAdded(false);
+
+    try {
+      const data = await scanLabelFromImage(
+        image.base64,
+        image.mimeType || "image/jpeg",
+        profile.apiKey,
+      );
+
+      if (data.error) setError("Could not read nutritional info from this image.");
+      else {
+        setResult(data);
+        if (!input.trim()) setInput("Scanned from label");
+      }
+    } catch (e) {
+      setError(`Error: ${e.message}`);
     }
-
-    const image = await pickImageFromCamera();
-    if (image.error === "permission") {
-      setError("Camera access is required to take pictures of your food.");
-      return;
-    }
-
-    await analyseFoodImage(image);
+    setLoading(false);
   };
 
-  const handleLibraryPress = async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  const handleSourceChoice = async (source) => {
+    const mode = sourcePickerMode;
+    setSourcePickerMode(null);
+    const image = source === "camera"
+      ? await pickImageFromCamera()
+      : await pickImageFromLibrary();
 
-    if (!profile.apiKey) {
+    if (image.error === "permission") {
       setError(
-        "No API key found. Tap your profile icon to add your Gemini API key.",
+        mode === "label"
+          ? "Camera access is required to scan labels."
+          : "Camera access is required to take pictures of your food.",
       );
       return;
     }
 
-    const image = await pickImageFromLibrary();
-    await analyseFoodImage(image);
+    if (mode === "label") {
+      await scanFoodLabel(image);
+    } else {
+      await analyseFoodImage(image);
+    }
   };
 
-  const handleLabelPress = async () => {
+  const openSourcePicker = (mode) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     if (!profile.apiKey) {
       setError("No API key found. Tap your profile icon to add your Gemini API key.");
       return;
     }
-
-    const image = await pickImageFromCamera();
-    if (image.error === "permission") {
-      setError("Camera access is required to scan labels.");
-      return;
-    }
-
-    if (!image.canceled && image.base64) {
-      setLoading(true);
-      setError(null);
-      setResult(null);
-      setAdded(false);
-      
-      try {
-        const data = await scanLabelFromImage(image.base64, image.mimeType, profile.apiKey);
-        
-        if (data.error) setError("Could not read nutritional info from this image.");
-        else {
-          setResult(data);
-          if (!input.trim()) {
-            setInput("Scanned from label");
-          }
-        }
-      } catch (e) {
-        setError(`Error: ${e.message}`);
-      }
-      setLoading(false);
-    }
+    setSourcePickerMode(mode);
   };
 
   return (
@@ -280,29 +273,60 @@ export default function LogScreen() {
         <>
           <TouchableOpacity 
             style={[s.miniFab, { bottom: insets.bottom + rs(105) }]} 
-            onPress={handleLabelPress} 
+            onPress={() => openSourcePicker("label")} 
             activeOpacity={0.8}
           >
             <Ionicons name="document-text" size={rf(20)} color={COLORS.white} />
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[s.libraryFab, { bottom: insets.bottom + rs(158) }]}
-            onPress={handleLibraryPress}
-            activeOpacity={0.8}
-          >
-            <Ionicons name="images" size={rf(20)} color={COLORS.white} />
-          </TouchableOpacity>
-
           <TouchableOpacity 
             style={[s.fab, { bottom: insets.bottom + rs(30) }]} 
-            onPress={handleCameraPress} 
+            onPress={() => openSourcePicker("food")} 
             activeOpacity={0.8}
           >
             <Ionicons name="camera" size={rf(26)} color={COLORS.white} />
           </TouchableOpacity>
         </>
       )}
+
+      <Modal
+        visible={!!sourcePickerMode}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSourcePickerMode(null)}
+      >
+        <View style={s.sourceOverlay}>
+          <View style={[s.sourceCard, SHADOW.md]}>
+            <Text style={s.sourceTitle}>
+              {sourcePickerMode === "label" ? "Scan a label" : "Add a food photo"}
+            </Text>
+            <Text style={s.sourceSubtitle}>Choose how to add your image</Text>
+            <TouchableOpacity
+              style={s.sourceOption}
+              onPress={() => handleSourceChoice("camera")}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="camera-outline" size={rf(22)} color={COLORS.green} />
+              <Text style={s.sourceOptionText}>Take photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.sourceOption}
+              onPress={() => handleSourceChoice("library")}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="images-outline" size={rf(22)} color={COLORS.green} />
+              <Text style={s.sourceOptionText}>Choose from library</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={s.sourceCancel}
+              onPress={() => setSourcePickerMode(null)}
+              activeOpacity={0.8}
+            >
+              <Text style={s.sourceCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -385,16 +409,53 @@ const createStyles = (COLORS, SHADOW) => StyleSheet.create({
     ...SHADOW.md,
     zIndex: 10,
   },
-  libraryFab: {
-    position: "absolute",
-    right: rs(28),
-    width: rs(44),
-    height: rs(44),
-    borderRadius: rs(22),
-    backgroundColor: COLORS.greenMutedDark,
-    justifyContent: "center",
+  sourceOverlay: {
+    flex: 1,
+    justifyContent: "flex-end",
+    backgroundColor: COLORS.darkScrim,
+    padding: rs(16),
+  },
+  sourceCard: {
+    backgroundColor: COLORS.card,
+    borderRadius: rs(24),
+    padding: rs(20),
+    marginBottom: rs(8),
+  },
+  sourceTitle: {
+    color: COLORS.dark,
+    fontSize: rf(18),
+    fontWeight: "800",
+    textAlign: "center",
+  },
+  sourceSubtitle: {
+    color: COLORS.muted,
+    fontSize: rf(13),
+    marginTop: rs(4),
+    marginBottom: rs(14),
+    textAlign: "center",
+  },
+  sourceOption: {
+    flexDirection: "row",
     alignItems: "center",
-    ...SHADOW.md,
-    zIndex: 10,
+    backgroundColor: COLORS.cardAlt,
+    borderRadius: rs(14),
+    gap: rs(12),
+    padding: rs(15),
+    marginTop: rs(8),
+  },
+  sourceOptionText: {
+    color: COLORS.dark,
+    fontSize: rf(15),
+    fontWeight: "700",
+  },
+  sourceCancel: {
+    alignItems: "center",
+    paddingVertical: rs(14),
+    marginTop: rs(4),
+  },
+  sourceCancelText: {
+    color: COLORS.muted,
+    fontSize: rf(14),
+    fontWeight: "700",
   },
 });
