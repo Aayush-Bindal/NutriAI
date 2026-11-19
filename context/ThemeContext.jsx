@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Appearance, useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme } from "react-native";
 import { DARK_COLORS, LIGHT_COLORS, makeShadow } from "../constants/theme";
 import { configureHaptics } from "../utils/haptics";
 import {
@@ -115,6 +115,11 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     if (!loaded) return;
 
+    if (Platform.OS === "web") {
+      document.documentElement.style.colorScheme = mode === "system" ? "" : mode;
+      return;
+    }
+
     // RN 0.86's Android implementation does not accept null here. Use the
     // explicit value that tells native code to follow the system preference.
     Appearance.setColorScheme(mode === "system" ? "unspecified" : mode);
@@ -140,6 +145,11 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     if (!loaded) return;
+
+    if (Platform.OS === "web") {
+      document.body.style.backgroundColor = colors.bg;
+      return;
+    }
 
     SystemUI.setBackgroundColorAsync(colors.bg).catch(console.warn);
   }, [colors.bg, loaded]);

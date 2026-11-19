@@ -12,6 +12,12 @@ export default function CalorieHeroCard({
   const { shadow: SHADOW } = useTheme();
   const s = useThemedStyles(createStyles);
   const caloriesOver = totals.calories > goal ? totals.calories - goal : 0;
+  const getCalorieSize = (value) => {
+    const digits = String(Math.round(Number(value) || 0)).length;
+    if (digits >= 5) return rf(18);
+    if (digits === 4) return rf(21);
+    return rf(24);
+  };
 
   return (
     <View style={[s.hero, SHADOW.md]}>
@@ -29,7 +35,12 @@ export default function CalorieHeroCard({
       <View style={s.ringRow}>
         <View style={s.statBox}>
           <Text style={s.statLbl}>Eaten</Text>
-          <Text style={s.statNum} numberOfLines={1} adjustsFontSizeToFit>
+          <Text
+            style={[s.statNum, { fontSize: getCalorieSize(totals.calories) }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
             {totals.calories.toLocaleString()}
           </Text>
           <Text style={s.statUnit}>kcal</Text>
@@ -41,7 +52,12 @@ export default function CalorieHeroCard({
 
         <View style={s.statBox}>
           <Text style={s.statLbl}>Goal</Text>
-          <Text style={s.statNum} numberOfLines={1} adjustsFontSizeToFit>
+          <Text
+            style={[s.statNum, { fontSize: getCalorieSize(goal) }]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.7}
+          >
             {goal.toLocaleString()}
           </Text>
           <Text style={s.statUnit}>kcal</Text>
@@ -83,7 +99,11 @@ const createStyles = (COLORS) => StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  statBox: { flex: 1, alignItems: "center" },
+  statBox: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: "center",
+  },
   statLbl: {
     fontSize: rf(12),
     fontWeight: "500",
@@ -93,10 +113,12 @@ const createStyles = (COLORS) => StyleSheet.create({
     marginBottom: rs(4),
   },
   statNum: {
-    fontSize: rf(24),
     fontWeight: "500",
     color: COLORS.greenDeep,
     letterSpacing: -0.5,
+    width: "100%",
+    flexShrink: 1,
+    textAlign: "center",
   },
   statUnit: {
     fontSize: rf(12),
