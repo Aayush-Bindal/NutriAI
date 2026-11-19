@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
   LayoutAnimation,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -493,7 +494,7 @@ export default function ProfileScreen() {
         <View style={s.footer}>
           <Text style={s.footerName}>NutriAI</Text>
           <Text style={s.footerVersion}>v{appVersion}</Text>
-          <TouchableOpacity
+          {Platform.OS !== "web" && <TouchableOpacity
             style={s.updateBtn}
             activeOpacity={0.7}
             onPress={checkForUpdates}
@@ -511,16 +512,16 @@ export default function ProfileScreen() {
                 <Text style={s.updateTxt}>Check for Updates</Text>
               </>
             )}
-          </TouchableOpacity>
+          </TouchableOpacity>}
         </View>
       </ScrollView>
 
       {/* ══════════ UPDATE MODAL ══════════ */}
-      <UpdateModal
+      {Platform.OS !== "web" && <UpdateModal
         data={updateModal}
         appVersion={appVersion}
         onClose={() => setUpdateModal(null)}
-      />
+      />}
 
       {/* ══════════ SAVE BUTTON (sticky bottom) ══════════ */}
       {dirty && (
